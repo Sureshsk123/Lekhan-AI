@@ -1,0 +1,22 @@
+{
+    "valid": {
+        "email": "test@example.com",
+        "password": "password123"
+    },
+    "invalidEmail": {
+        "email": "invalid@email.com",
+        "password": "wrong"
+    },
+    "invalidPassword": {
+        "email": "test@example.com",
+        "password": "wrong_password!"
+    },
+    "emptyBoth": {
+        "email": "",
+        "password": ""
+    },
+    "spacedEmail": {
+        "email": "invalid email @ test . com",
+        "password": "password123"
+    }
+}

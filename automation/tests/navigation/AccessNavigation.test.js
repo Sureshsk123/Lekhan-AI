@@ -2,6 +2,8 @@ import { expect } from 'chai';
 import { BaseTest } from '../BaseTest.js';
 import { LoginPage } from '../../pages/auth/LoginPage.js';
 import { envManager } from '../../utilities/EnvironmentManager.js';
+import { dataManager } from '../../utilities/DataManager.js';
+
 
 describe('Access & Deep Link Navigation Tests', function () {
     BaseTest.setupHooks();
@@ -41,7 +43,7 @@ describe('Access & Deep Link Navigation Tests', function () {
 
     it('3. Unauthorized Navigation (Role-based)', async function () {
         // Login as standard user
-        await loginPage.loginAs('test@example.com', 'password123');
+        await loginPage.loginAs(dataManager.getUser('student').email, dataManager.getUser('student').password);
         await this.driver.wait(async () => (await this.driver.getCurrentUrl()).includes('/dashboard'), loginPage.actions.timeout);
         
         // Attempt to hit admin route
@@ -56,7 +58,7 @@ describe('Access & Deep Link Navigation Tests', function () {
 
     it('4. Deep Linking (Authenticated)', async function () {
         // Login
-        await loginPage.loginAs('test@example.com', 'password123');
+        await loginPage.loginAs(dataManager.getUser('student').email, dataManager.getUser('student').password);
         await this.driver.wait(async () => (await this.driver.getCurrentUrl()).includes('/dashboard'), loginPage.actions.timeout);
         
         // Access a deep link directly (e.g. specific lesson)

@@ -4,6 +4,8 @@ import { Sidebar } from '../../pages/components/Sidebar.js';
 import { LoginPage } from '../../pages/auth/LoginPage.js';
 import { DashboardPage } from '../../pages/dashboard/DashboardPage.js';
 import { envManager } from '../../utilities/EnvironmentManager.js';
+import { dataManager } from '../../utilities/DataManager.js';
+
 
 describe('Browser History & Routing Tests', function () {
     BaseTest.setupHooks();
@@ -19,7 +21,7 @@ describe('Browser History & Routing Tests', function () {
 
     beforeEach(async function () {
         await this.driver.get(`${envManager.getBaseUrl()}/login`);
-        await loginPage.loginAs('test@example.com', 'password123');
+        await loginPage.loginAs(dataManager.getUser('student').email, dataManager.getUser('student').password);
         await this.driver.wait(async () => (await this.driver.getCurrentUrl()).includes('/dashboard'), loginPage.actions.timeout);
     });
 

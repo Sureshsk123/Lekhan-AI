@@ -2,6 +2,8 @@ import { expect } from 'chai';
 import { BaseTest } from '../BaseTest.js';
 import { RegisterPage } from '../../pages/auth/RegisterPage.js';
 import { envManager } from '../../utilities/EnvironmentManager.js';
+import { dataManager } from '../../utilities/DataManager.js';
+
 
 describe('Registration Form Validation Tests', function () {
     BaseTest.setupHooks();
@@ -49,7 +51,7 @@ describe('Registration Form Validation Tests', function () {
 
     it('4. Password Complexity / Minimum Length', async function () {
         await registerPage.enterName('Test User');
-        await registerPage.enterEmail('test@example.com');
+        await registerPage.enterEmail(dataManager.getUser('student').email);
         await registerPage.enterPassword('123'); // Too short
         await registerPage.submitRegistration();
 

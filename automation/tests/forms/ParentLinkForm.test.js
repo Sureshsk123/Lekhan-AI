@@ -4,6 +4,8 @@ import { ParentDashboardPage } from '../../pages/dashboard/ParentDashboardPage.j
 import { LoginPage } from '../../pages/auth/LoginPage.js';
 import { Toasts } from '../../pages/components/Toasts.js';
 import { envManager } from '../../utilities/EnvironmentManager.js';
+import { dataManager } from '../../utilities/DataManager.js';
+
 
 describe('Parent Link Form Validation Tests', function () {
     BaseTest.setupHooks();
@@ -20,7 +22,7 @@ describe('Parent Link Form Validation Tests', function () {
     beforeEach(async function () {
         // Authenticate as a parent
         await this.driver.get(`${envManager.getBaseUrl()}/login`);
-        await loginPage.loginAs('parent@example.com', 'password123');
+        await loginPage.loginAs(dataManager.getUser('parent').email, dataManager.getUser('student').password);
         await this.driver.wait(async () => (await this.driver.getCurrentUrl()).includes('/parent-dashboard'), loginPage.actions.timeout);
         
         await parentPage.openLinkChildForm();

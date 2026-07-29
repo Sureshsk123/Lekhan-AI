@@ -3,6 +3,8 @@ import { BaseTest } from '../BaseTest.js';
 import { SettingsPage } from '../../pages/settings/SettingsPage.js';
 import { LoginPage } from '../../pages/auth/LoginPage.js';
 import { envManager } from '../../utilities/EnvironmentManager.js';
+import { dataManager } from '../../utilities/DataManager.js';
+
 
 describe('Settings Form Validation Tests', function () {
     BaseTest.setupHooks();
@@ -17,7 +19,7 @@ describe('Settings Form Validation Tests', function () {
     beforeEach(async function () {
         // Authenticate first since settings is protected
         await this.driver.get(`${envManager.getBaseUrl()}/login`);
-        await loginPage.loginAs('test@example.com', 'password123');
+        await loginPage.loginAs(dataManager.getUser('student').email, dataManager.getUser('student').password);
         await this.driver.wait(async () => (await this.driver.getCurrentUrl()).includes('/dashboard'), loginPage.actions.timeout);
         
         await this.driver.get(`${envManager.getBaseUrl()}/settings`);

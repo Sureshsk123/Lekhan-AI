@@ -1,0 +1,20 @@
+{
+    "valid": {
+        "name": "New User",
+        "email": "unique_email@example.com",
+        "password": "Password123!",
+        "role": "student"
+    },
+    "invalidEmailFormat": {
+        "name": "Test",
+        "email": "invalid-email-format",
+        "password": "Password123!",
+        "role": "student"
+    },
+    "shortPassword": {
+        "name": "Test",
+        "email": "test@test.com",
+        "password": "123",
+        "role": "student"
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "profile": {
+        "newName": "Updated User Bio Name",
+        "bio": "Updated Bio content",
+        "xssString": "<script>alert(1)</script>"
+    }
+}

@@ -2,6 +2,8 @@ import { expect } from 'chai';
 import { BaseTest } from '../BaseTest.js';
 import { LoginPage } from '../../pages/auth/LoginPage.js';
 import { envManager } from '../../utilities/EnvironmentManager.js';
+import { dataManager } from '../../utilities/DataManager.js';
+
 
 describe('Login Form Validation Tests', function () {
     BaseTest.setupHooks();
@@ -25,8 +27,8 @@ describe('Login Form Validation Tests', function () {
     });
 
     it('2. Invalid Characters in Email', async function () {
-        await loginPage.enterEmail('invalid email @ test . com');
-        await loginPage.enterPassword('password123');
+        await loginPage.enterEmail(dataManager.getLoginData('spacedEmail').email);
+        await loginPage.enterPassword(dataManager.getUser('student').password);
         await loginPage.submitLogin();
 
         const emailInput = await loginPage.actions.waitForVisible(loginPage.locators.emailInput);
@@ -35,8 +37,8 @@ describe('Login Form Validation Tests', function () {
     });
 
     it('3. Form Reset Behavior (Manual Clear)', async function () {
-        await loginPage.enterEmail('test@example.com');
-        await loginPage.enterPassword('password123');
+        await loginPage.enterEmail(dataManager.getUser('student').email);
+        await loginPage.enterPassword(dataManager.getUser('student').password);
         
         // Clear fields using our CommonActions clear wrapper
         await loginPage.actions.clear(loginPage.locators.emailInput);

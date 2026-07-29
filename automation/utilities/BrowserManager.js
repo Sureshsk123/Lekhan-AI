@@ -3,10 +3,14 @@ import { logger } from './LoggerUtility.js';
 
 export class BrowserManager {
     static async getDriver() {
-        if (!this.driver) {
-            this.driver = await BrowserDriverFactory.createDriver();
-            await this.driver.manage().window().maximize();
+        if (!this.driverPromise) {
+            this.driverPromise = (async () => {
+                const driver = await BrowserDriverFactory.createDriver();
+                await driver.manage().window().maximize();
+                return driver;
+            })();
         }
+        this.driver = await this.driverPromise;
         return this.driver;
     }
 
@@ -15,6 +19,12 @@ export class BrowserManager {
             logger.info('Quitting driver session...');
             await this.driver.quit();
             this.driver = null;
+            this.driverPromise = null;
+        } else if (this.driverPromise) {
+            const driver = await this.driverPromise;
+            await driver.quit();
+            this.driver = null;
+            this.driverPromise = null;
         }
     }
 

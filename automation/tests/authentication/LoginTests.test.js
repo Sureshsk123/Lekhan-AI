@@ -6,6 +6,8 @@ import { Navbar } from '../../pages/components/Navbar.js';
 import { Toasts } from '../../pages/components/Toasts.js';
 import { envManager } from '../../utilities/EnvironmentManager.js';
 import { logger } from '../../utilities/LoggerUtility.js';
+import { dataManager } from '../../utilities/DataManager.js';
+
 
 describe('Authentication Tests', function () {
     BaseTest.setupHooks();
@@ -15,8 +17,8 @@ describe('Authentication Tests', function () {
     let navbar;
     let toasts;
 
-    const validEmail = 'test@example.com';
-    const validPassword = 'password123';
+    const validEmail = dataManager.getUser('student').email;
+    const validPassword = dataManager.getUser('student').password;
     const invalidEmail = 'invalid@example.com';
     const invalidPassword = 'wrongpassword';
 

@@ -1,0 +1,6 @@
+{
+  "browser": "chrome",
+  "headless": false,
+  "parallel": true,
+  "workers": 4
+}
