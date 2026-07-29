@@ -1,0 +1,34 @@
+{
+  "name": "lekhan-automation",
+  "version": "1.0.0",
+  "description": "Selenium E2E Automation Framework",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha --config mocha.config.js",
+    "test:dev": "cross-env NODE_ENV=dev npm run test",
+    "test:prod": "cross-env NODE_ENV=prod npm run test",
+    "clean": "rm -rf reports/* logs/* screenshots/*"
+  },
+  "keywords": [
+    "selenium",
+    "mocha",
+    "chai",
+    "e2e",
+    "automation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^5.1.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "mocha": "^10.7.3",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.3.0",
+    "mochawesome-report-generator": "^6.2.0",
+    "selenium-webdriver": "^4.23.0",
+    "winston": "^3.14.2"
+  }
+}

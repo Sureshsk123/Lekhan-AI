@@ -1,0 +1,8 @@
+{
+  "baseUrl": "https://production.example.com",
+  "apiUrl": "https://api.production.example.com/api",
+  "browser": "chrome",
+  "headless": true,
+  "implicitWait": 10000,
+  "explicitWait": 15000
+}
