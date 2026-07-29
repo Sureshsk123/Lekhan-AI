@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "points"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "points": {
+      "type": "number"
+    }
+  }
+}

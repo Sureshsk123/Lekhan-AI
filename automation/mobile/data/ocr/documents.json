@@ -1,0 +1,7 @@
+[
+  {
+    "id": "doc1",
+    "documentName": "invoice.jpg",
+    "expectedText": "Total: $10"
+  }
+]

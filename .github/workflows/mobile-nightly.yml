@@ -1,0 +1,29 @@
+name: Mobile Nightly Execution
+on:
+  schedule:
+    - cron: '0 2 * * *'
+jobs:
+  nightly-regression:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        api-level: [31, 33, 34]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/shared/setup-mobile
+        with:
+          api-level: ${{ matrix.api-level }}
+      - name: Boot Emulator
+        env:
+          API_LEVEL: ${{ matrix.api-level }}
+        run: ./automation/mobile/scripts/setup-emulator.sh
+      - name: Wait for Device
+        run: ./automation/mobile/scripts/wait-for-device.sh
+      - name: Health Check
+        run: ./automation/mobile/scripts/health-check.sh
+      - uses: ./.github/shared/run-mobile-tests
+        with:
+          execution-type: regression
+          environment: staging
+      - uses: ./.github/shared/publish-artifacts
+        if: always()

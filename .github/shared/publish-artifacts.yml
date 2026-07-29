@@ -1,0 +1,21 @@
+name: 'Publish Artifacts'
+description: 'Uploads Reports and Logs'
+runs:
+  using: "composite"
+  steps:
+    - name: Format Job Summary
+      shell: bash
+      run: ./automation/mobile/scripts/publish-reports.sh
+    - name: Upload HTML/JSON/Excel Reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: execution-reports
+        path: automation/mobile/reports/
+    - name: Upload Screenshots & Logs
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: failure-artifacts
+        path: |
+          automation/mobile/screenshots/
+          automation/mobile/logs/

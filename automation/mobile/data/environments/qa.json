@@ -1,0 +1,4 @@
+{
+  "apiUrl": "https://qa.api.example.com",
+  "timeout": 15000
+}

@@ -1,0 +1,22 @@
+{
+  "name": "enterprise-mobile-automation",
+  "version": "1.0.0",
+  "description": "Enterprise Mobile Automation Framework using Appium and WebdriverIO",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "mocha tests/**/*.test.js",
+    "clean": "rm -rf reports/* logs/* screenshots/*"
+  },
+  "dependencies": {
+    "appium": "^2.11.2",
+    "webdriverio": "^8.39.0",
+    "mocha": "^10.7.3",
+    "chai": "^5.1.1",
+    "winston": "^3.14.2",
+    "exceljs": "^4.4.0",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.3.0",
+    "mochawesome-report-generator": "^6.2.0"
+  }
+}

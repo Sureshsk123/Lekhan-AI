@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "required": [
+    "id",
+    "documentName",
+    "expectedText"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "documentName": {
+      "type": "string"
+    },
+    "expectedText": {
+      "type": "string"
+    }
+  }
+}

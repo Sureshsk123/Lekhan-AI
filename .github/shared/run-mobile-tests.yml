@@ -1,0 +1,19 @@
+name: 'Run Mobile Tests'
+description: 'Executes the Enterprise ExecutionManager'
+inputs:
+  execution-type:
+    required: true
+  environment:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Run Tests
+      shell: bash
+      env:
+        NODE_ENV: ${{ inputs.environment }}
+        EXECUTION_TAGS: ${{ inputs.execution-type }}
+      run: |
+        cd automation
+        npm install
+        npm run test -- --tags=$EXECUTION_TAGS

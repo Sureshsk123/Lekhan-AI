@@ -1,0 +1,4 @@
+{
+  "apiUrl": "https://staging.api.example.com",
+  "timeout": 10000
+}

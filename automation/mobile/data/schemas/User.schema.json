@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "required": [
+    "id",
+    "username",
+    "role"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "parent",
+        "admin"
+      ]
+    }
+  }
+}

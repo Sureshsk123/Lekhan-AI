@@ -1,0 +1,19 @@
+name: 'Run Unified Platform'
+description: 'Triggers the PlatformExecutionManager'
+inputs:
+  mode:
+    required: true
+    description: 'web, mobile, or hybrid'
+  execution-type:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Execute Enterprise Platform
+      shell: bash
+      env:
+        PLATFORM_MODE: ${{ inputs.mode }}
+      run: |
+        cd automation
+        npm install
+        node -e "import('./orchestration/PlatformExecutionManager.js').then(m => new m.PlatformExecutionManager().execute('${{ inputs.execution-type }}'))"

@@ -1,0 +1,52 @@
+name: Enterprise Unified Platform Execution
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Execution Mode'
+        required: true
+        default: 'hybrid'
+        type: choice
+        options: [web, mobile, hybrid]
+      execution-type:
+        description: 'Suite to run'
+        required: true
+        default: 'regression'
+      environment:
+        required: true
+        default: 'qa'
+
+jobs:
+  unified-execution:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      # Conditionally Setup Mobile
+      - uses: ./.github/shared/setup-mobile
+        if: ${{ github.event.inputs.mode == 'mobile' || github.event.inputs.mode == 'hybrid' }}
+        with:
+          api-level: '33'
+      - name: Boot Emulator
+        if: ${{ github.event.inputs.mode == 'mobile' || github.event.inputs.mode == 'hybrid' }}
+        env:
+          API_LEVEL: '33'
+        run: ./automation/mobile/scripts/setup-emulator.sh
+
+      # Conditionally Setup Web
+      - uses: ./.github/shared/setup-web
+        if: ${{ github.event.inputs.mode == 'web' || github.event.inputs.mode == 'hybrid' }}
+
+      # Execute Platform
+      - uses: ./.github/shared/run-platform
+        with:
+          mode: ${{ github.event.inputs.mode }}
+          execution-type: ${{ github.event.inputs.execution-type }}
+          
+      # Unified Upload
+      - name: Upload Unified Reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: enterprise-reports
+          path: automation/reports/unified/

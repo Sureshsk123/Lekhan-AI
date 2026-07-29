@@ -1,0 +1,28 @@
+name: 'Setup Mobile Environment'
+description: 'Bootstraps Node, Java, and Android SDK'
+inputs:
+  api-level:
+    description: 'Android API Level'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: 'automation/package.json'
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+    - name: Cache AVD
+      uses: actions/cache@v3
+      with:
+        path: ~/.android/avd
+        key: avd-${{ inputs.api-level }}
+    - name: Run Android Setup Script
+      shell: bash
+      env:
+        API_LEVEL: ${{ inputs.api-level }}
+      run: ./automation/mobile/scripts/setup-android.sh

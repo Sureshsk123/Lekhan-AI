@@ -1,0 +1,8 @@
+[
+  {
+    "id": "s1",
+    "username": "student1",
+    "password": "studentPass!",
+    "role": "student"
+  }
+]
