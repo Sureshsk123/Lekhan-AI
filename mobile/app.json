@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "LangSphere Mobile",
+    "slug": "langsphere-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F172A"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.langsphere.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "LangSphere requires camera access for Vision OCR text scanner.",
+        "NSMicrophoneUsageDescription": "LangSphere requires microphone access for speech recognition and pronunciation practice."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F172A"
+      },
+      "package": "com.langsphere.app",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-camera"
+    ],
+    "scheme": "langsphere",
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

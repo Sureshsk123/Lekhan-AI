@@ -1,0 +1,50 @@
+node_modules/
+dist/
+.env
+backend/.env
+coverage/
+reports/
+logs/
+screenshots/
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+
+# Node
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Build
+dist/
+build/
+
+# Logs
+logs/
+*.log
+
+# Reports
+reports/
+screenshots/
+excel/
+
+# Expo
+.expo/
+.expo-shared/
+
+# Android
+android/app/build/
+
+# iOS
+ios/build/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
