@@ -109,7 +109,7 @@ export const AiTutorPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-7xl mx-auto w-full">
@@ -118,13 +118,13 @@ export const AiTutorPage = () => {
         <main className="flex-1 flex flex-col h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8 space-y-4 overflow-hidden pb-20 lg:pb-6">
           <Breadcrumbs />
 
-          <div className="flex-1 flex gap-4 bg-white/70 dark:bg-slate-900/70 rounded-3xl border border-slate-200/60 dark:border-slate-800/80 backdrop-blur-xl overflow-hidden shadow-xl">
+          <div className="flex-1 flex gap-4 bg-surface-primary/70 dark:bg-surface-primary/70 rounded-3xl border border-border-light/60 backdrop-blur-xl overflow-hidden shadow-xl">
             
             {/* Sessions Sidebar */}
-            <div className="hidden md:flex flex-col w-64 border-r border-slate-200/60 dark:border-slate-800/80 p-4 space-y-3 bg-slate-50/50 dark:bg-slate-900/40">
+            <div className="hidden md:flex flex-col w-64 border-r border-border-light/60 p-4 space-y-3 bg-slate-50/50 dark:bg-surface-primary/40">
               <button
                 onClick={handleNewSession}
-                className="w-full py-2.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:scale-105 transition-all"
+                className="w-full py-2.5 px-4 rounded-2xl bg-accent-primary text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:scale-105 transition-all"
               >
                 <Plus className="w-4 h-4" /> New Chat Session
               </button>
@@ -141,7 +141,7 @@ export const AiTutorPage = () => {
                       className={`group flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-colors ${
                         active
                           ? 'bg-emerald-500 text-white shadow-sm'
-                          : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                          : 'text-content-tertiary hover:bg-surface-tertiary'
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
@@ -167,9 +167,9 @@ export const AiTutorPage = () => {
             <div className="flex-1 flex flex-col h-full overflow-hidden">
               
               {/* Header */}
-              <div className="p-4 border-b border-slate-200/60 dark:border-slate-800/80 flex items-center justify-between">
+              <div className="p-4 border-b border-border-light/60 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 rounded-2xl bg-accent-primary text-white flex items-center justify-center shadow-md">
                     <Bot className="w-5 h-5" />
                   </div>
                   <div>
@@ -203,7 +203,7 @@ export const AiTutorPage = () => {
                         <button
                           key={i}
                           onClick={() => handleSendMessage(prompt)}
-                          className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-left text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700/60 transition-colors"
+                          className="p-3 rounded-2xl bg-surface-tertiary hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-left text-xs font-semibold text-content-secondary border border-slate-200/60 dark:border-slate-700/60 transition-colors"
                         >
                           💬 "{prompt}"
                         </button>
@@ -217,15 +217,15 @@ export const AiTutorPage = () => {
                       className={`flex gap-3 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       {m.role !== 'user' && (
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center shrink-0 shadow-md">
+                        <div className="w-8 h-8 rounded-xl bg-accent-primary text-white flex items-center justify-center shrink-0 shadow-md">
                           <Bot className="w-4 h-4" />
                         </div>
                       )}
 
                       <div className={`max-w-xl p-4 rounded-3xl text-xs sm:text-sm leading-relaxed ${
                         m.role === 'user'
-                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md rounded-br-none font-medium'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border border-slate-200/60 dark:border-slate-700/60 rounded-bl-none'
+                          ? 'bg-accent-primary text-white shadow-md rounded-br-none font-medium'
+                          : 'bg-surface-tertiary text-slate-800 dark:text-slate-100 border border-slate-200/60 dark:border-slate-700/60 rounded-bl-none'
                       }`}>
                         <p className="whitespace-pre-wrap">{m.content}</p>
                         {m.role !== 'user' && (
@@ -254,7 +254,7 @@ export const AiTutorPage = () => {
                     <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center animate-pulse">
                       <Bot className="w-4 h-4" />
                     </div>
-                    <div className="p-4 rounded-3xl bg-slate-100 dark:bg-slate-800 text-xs text-slate-400 flex items-center gap-2">
+                    <div className="p-4 rounded-3xl bg-surface-tertiary text-xs text-slate-400 flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce"></div>
                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.2s]"></div>
                       <div className="w-2 h-2 rounded-full bg-emerald-500 animate-bounce [animation-delay:0.4s]"></div>
@@ -265,7 +265,7 @@ export const AiTutorPage = () => {
               </div>
 
               {/* Input Footer */}
-              <div className="p-3 border-t border-slate-200/60 dark:border-slate-800/80 bg-white/40 dark:bg-slate-900/40">
+              <div className="p-3 border-t border-border-light/60 bg-surface-primary/40 dark:bg-surface-primary/40">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -278,12 +278,12 @@ export const AiTutorPage = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask AI Tutor anything..."
-                    className="flex-1 px-4 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs sm:text-sm font-medium"
+                    className="flex-1 px-4 py-3 rounded-2xl bg-surface-tertiary text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-xs sm:text-sm font-medium"
                   />
                   <button
                     type="submit"
                     disabled={!input.trim() || loading}
-                    className="p-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold disabled:opacity-50 hover:scale-105 active:scale-95 transition-all shadow-md"
+                    className="p-3 rounded-2xl bg-accent-primary text-white font-bold disabled:opacity-50 hover:scale-105 active:scale-95 transition-all shadow-md"
                   >
                     <Send className="w-4 h-4" />
                   </button>

@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import authService from '../services/authService';
-import apiClient from '../services/apiClient';
 
 const AuthContext = createContext();
 
@@ -15,7 +14,12 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  // Load token from storage on init — check both localStorage (rememberMe) and sessionStorage
+  const getStoredToken = () =>
+    localStorage.getItem('token') || sessionStorage.getItem('token');
+
+  const [token, setToken] = useState(getStoredToken);
 
   useEffect(() => {
     if (token) {
@@ -28,81 +32,79 @@ export const AuthProvider = ({ children }) => {
   const loadUser = async () => {
     try {
       const data = await authService.getProfile();
-      if (data && data.data && data.data.user) {
-        setUser(data.data.user);
-      } else if (data && data.user) {
+      if (data?.user) {
         setUser(data.user);
+      } else {
+        logout();
       }
-    } catch (error) {
-      console.error('Error loading user profile:', error);
+    } catch {
       logout();
     } finally {
       setLoading(false);
     }
   };
 
-  const signup = async (userData) => {
-    try {
-      const res = await authService.signup(userData);
-      const resData = res.data || res;
-      const newToken = resData.token;
-      const newUser = resData.user;
+  const storeToken = (tok, rememberMe = false) => {
+    if (rememberMe) {
+      localStorage.setItem('token', tok);
+      sessionStorage.removeItem('token');
+    } else {
+      sessionStorage.setItem('token', tok);
+      localStorage.removeItem('token');
+    }
+    setToken(tok);
+  };
 
-      if (newToken) {
-        localStorage.setItem('token', newToken);
-        setToken(newToken);
-      }
-      if (newUser) {
-        setUser(newUser);
-      }
-      return { success: true, data: resData };
+  const signup = async ({ email, password, fullName }) => {
+    try {
+      const res = await authService.signup({ email, password, fullName });
+      if (res.token) storeToken(res.token, true); // always persist after signup
+      if (res.user) setUser(res.user);
+      return { success: true, data: res };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Registration failed'
+        message: error.response?.data?.message || error.message || 'Registration failed',
       };
     }
   };
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     try {
       const res = await authService.login(email, password);
-      const resData = res.data || res;
-      const newToken = resData.token;
-      const newUser = resData.user;
-
-      if (newToken) {
-        localStorage.setItem('token', newToken);
-        setToken(newToken);
-      }
-      if (newUser) {
-        setUser(newUser);
-      }
-      return { success: true, data: resData };
+      if (res.token) storeToken(res.token, rememberMe);
+      if (res.user) setUser(res.user);
+      return { success: true, data: res };
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: error.response?.data?.message || error.message || 'Login failed',
       };
     }
   };
 
   const logout = () => {
-    authService.logout();
+    const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+    authService.logout(refreshToken).catch(() => {});
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refreshToken');
     setToken(null);
     setUser(null);
   };
 
-  const [activeLanguage, setActiveLanguageState] = useState(localStorage.getItem('activeLanguage') || 'tamil');
+  const updateUser = (updatedData) => {
+    setUser((prev) => (prev ? { ...prev, ...updatedData } : null));
+  };
+
+  const [activeLanguage, setActiveLanguageState] = useState(
+    localStorage.getItem('activeLanguage') || 'tamil'
+  );
 
   const setActiveLanguage = (lang) => {
     localStorage.setItem('activeLanguage', lang);
     setActiveLanguageState(lang);
-  };
-
-  const updateUser = (updatedData) => {
-    setUser((prev) => (prev ? { ...prev, ...updatedData } : null));
   };
 
   const value = {
@@ -115,7 +117,7 @@ export const AuthProvider = ({ children }) => {
     updateUser,
     loadUser,
     activeLanguage,
-    setActiveLanguage
+    setActiveLanguage,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

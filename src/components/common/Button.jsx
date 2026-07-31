@@ -12,11 +12,11 @@ export const Button = ({
   const base = 'inline-flex items-center justify-center font-bold rounded-2xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none';
 
   const variants = {
-    primary: 'bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:scale-[1.01]',
-    secondary: 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700',
+    primary: 'bg-accent-primary text-white shadow-lg shadow-sm hover:shadow-sm hover:scale-[1.01]',
+    secondary: 'bg-surface-tertiary text-slate-800 dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700',
     outline: 'border-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40',
-    danger: 'bg-gradient-to-r from-rose-500 to-red-600 text-white shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40',
-    ghost: 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+    danger: 'bg-accent-primary text-white shadow-lg shadow-sm hover:shadow-sm',
+    ghost: 'text-content-tertiary hover:bg-surface-tertiary'
   };
 
   const sizes = {

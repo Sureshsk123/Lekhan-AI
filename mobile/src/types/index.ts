@@ -159,12 +159,7 @@ export interface ChildProgress {
   recentLessons: { title: string; score: number; completedAt: string }[];
 }
 
-export interface OCRResult {
-  extractedText: string;
-  detectedLanguage?: string;
-  grammarSuggestions: { original: string; suggestion: string; explanation: string }[];
-  imageUrl?: string;
-}
+
 
 export interface HandwritingResult {
   score: number;

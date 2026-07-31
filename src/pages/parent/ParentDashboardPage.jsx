@@ -62,7 +62,7 @@ export const ParentDashboardPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-7xl mx-auto w-full">
@@ -77,12 +77,12 @@ export const ParentDashboardPage = () => {
               <h1 className="text-2xl sm:text-3xl font-black flex items-center gap-2">
                 <Users className="w-7 h-7 text-teal-500" /> Parent Portal Dashboard
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Monitor child learning progress, study hours, weak topics, and AI reports</p>
+              <p className="text-xs text-content-tertiary mt-1">Monitor child learning progress, study hours, weak topics, and AI reports</p>
             </div>
 
             <button
               onClick={() => setModalOpen(true)}
-              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-xs shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+              className="px-4 py-2.5 rounded-2xl bg-accent-primary text-white font-bold text-xs shadow-lg hover:scale-105 transition-all flex items-center gap-2"
             >
               <Plus className="w-4 h-4" /> Link Child Account
             </button>
@@ -90,7 +90,7 @@ export const ParentDashboardPage = () => {
 
           {/* Children Tabs */}
           {children.length > 0 && (
-            <div className="flex gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+            <div className="flex gap-2 border-b border-border-light pb-2">
               {children.map((c) => {
                 const cId = c._id || c.id;
                 const active = selectedChildId === cId;
@@ -101,7 +101,7 @@ export const ParentDashboardPage = () => {
                     className={`px-4 py-2 rounded-2xl text-xs font-bold transition-colors ${
                       active
                         ? 'bg-teal-500 text-white shadow-md'
-                        : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        : 'text-slate-500 hover:bg-surface-tertiary'
                     }`}
                   >
                     👤 {c.username}
@@ -144,7 +144,7 @@ export const ParentDashboardPage = () => {
                   <Brain className="w-4 h-4 text-emerald-500" /> AI Recommendations for Child
                 </h3>
                 {childDashboard.recommendations?.map((r, i) => (
-                  <div key={i} className="p-3.5 rounded-2xl bg-slate-100 dark:bg-slate-800 text-xs">
+                  <div key={i} className="p-3.5 rounded-2xl bg-surface-tertiary text-xs">
                     <p className="font-bold text-slate-800 dark:text-white">{r.title}</p>
                     <p className="text-slate-400 mt-0.5">{r.reason}</p>
                   </div>
@@ -162,20 +162,20 @@ export const ParentDashboardPage = () => {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Link Child Learner Account">
         <form onSubmit={handleLinkChild} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Child Account Email</label>
+            <label className="block text-xs font-bold text-content-secondary mb-1">Child Account Email</label>
             <input
               type="email"
               required
               value={childEmail}
               onChange={(e) => setChildEmail(e.target.value)}
               placeholder="child@example.com"
-              className="w-full px-4 py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full px-4 py-2.5 rounded-2xl bg-surface-tertiary border border-border-light text-xs font-medium focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 rounded-2xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all"
+            className="w-full py-3 rounded-2xl bg-accent-primary text-white font-bold text-sm shadow-lg hover:scale-105 active:scale-95 transition-all"
           >
             Link Child Account
           </button>

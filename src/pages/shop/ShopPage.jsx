@@ -58,7 +58,7 @@ export const ShopPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-7xl mx-auto w-full">
@@ -73,7 +73,7 @@ export const ShopPage = () => {
               <h1 className="text-2xl sm:text-3xl font-black flex items-center gap-2">
                 <ShoppingBag className="w-7 h-7 text-emerald-500" /> Epic Item Shop
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Unlock custom themes, frames, avatar cosmetics, and XP multipliers</p>
+              <p className="text-xs text-content-tertiary mt-1">Unlock custom themes, frames, avatar cosmetics, and XP multipliers</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -84,7 +84,7 @@ export const ShopPage = () => {
           </div>
 
           {/* Categories Tab */}
-          <div className="flex gap-2 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
+          <div className="flex gap-2 border-b border-border-light pb-2 overflow-x-auto">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -92,7 +92,7 @@ export const ShopPage = () => {
                 className={`px-4 py-2 rounded-2xl text-xs font-bold capitalize whitespace-nowrap transition-colors ${
                   activeCategory === cat.id
                     ? 'bg-emerald-500 text-white shadow-md'
-                    : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    : 'text-slate-500 hover:bg-surface-tertiary'
                 }`}
               >
                 {cat.label}
@@ -116,15 +116,15 @@ export const ShopPage = () => {
 
                     <div className="text-center">
                       <h3 className="font-bold text-base text-slate-800 dark:text-white">{item.name}</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{item.description}</p>
+                      <p className="text-xs text-content-tertiary mt-1">{item.description}</p>
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+                  <div className="pt-4 mt-4 border-t border-border-light/60 flex items-center justify-between">
                     <span className="text-xs font-extrabold text-amber-500">💎 {item.price}</span>
                     <button
                       onClick={() => setSelectedItem(item)}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-xs shadow-md hover:scale-105 transition-all"
+                      className="px-4 py-2 rounded-xl bg-accent-primary text-white font-bold text-xs shadow-md hover:scale-105 transition-all"
                     >
                       Buy Item
                     </button>
@@ -156,7 +156,7 @@ export const ShopPage = () => {
               </button>
               <button
                 onClick={() => setSelectedItem(null)}
-                className="flex-1 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-xs font-bold"
+                className="flex-1 py-3 rounded-2xl bg-surface-tertiary text-xs font-bold"
               >
                 Cancel
               </button>

@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import SmartDashboardPage from './pages/dashboard/SmartDashboardPage';
 import AiTutorPage from './pages/tutor/AiTutorPage';
 import LessonsListPage from './pages/lessons/LessonsListPage';
@@ -17,12 +18,9 @@ import StoriesPage from './pages/stories/StoriesPage';
 import StoryReaderPage from './pages/stories/StoryReaderPage';
 import QuizPage from './pages/quiz/QuizPage';
 import QuizResultsPage from './pages/quiz/QuizResultsPage';
-import VisionOcrPage from './pages/ocr/VisionOcrPage';
 import HandwritingCanvasPage from './pages/handwriting/HandwritingCanvasPage';
-import PersonalizedLearningPage from './pages/personalized/PersonalizedLearningPage';
 import ShopPage from './pages/shop/ShopPage';
 import InventoryPage from './pages/inventory/InventoryPage';
-import LeaderboardsPage from './pages/leaderboards/LeaderboardsPage';
 import NotificationCenterPage from './pages/notifications/NotificationCenterPage';
 import ParentDashboardPage from './pages/parent/ParentDashboardPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -30,6 +28,7 @@ import AnalyticsPage from './pages/analytics/AnalyticsPage';
 import ReportsPage from './pages/reports/ReportsPage';
 import GlobalSearchPage from './pages/search/GlobalSearchPage';
 import SettingsPage from './pages/settings/SettingsPage';
+import ProfilePage from './pages/profile/ProfilePage';
 
 // Protected Route Guard
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -37,7 +36,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -60,13 +59,14 @@ function App() {
       <AuthProvider>
         <NotificationProvider>
           <Router>
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+            <div className="min-h-screen bg-transparent text-content-primary transition-colors">
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<RegisterPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
 
                 {/* Protected Student / General Routes */}
                 <Route path="/dashboard" element={<ProtectedRoute><SmartDashboardPage /></ProtectedRoute>} />
@@ -77,17 +77,15 @@ function App() {
                 <Route path="/story/:id" element={<ProtectedRoute><StoryReaderPage /></ProtectedRoute>} />
                 <Route path="/quiz/:lessonId?" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
                 <Route path="/quiz-results" element={<ProtectedRoute><QuizResultsPage /></ProtectedRoute>} />
-                <Route path="/vision-ocr" element={<ProtectedRoute><VisionOcrPage /></ProtectedRoute>} />
                 <Route path="/handwriting/:language?" element={<ProtectedRoute><HandwritingCanvasPage /></ProtectedRoute>} />
-                <Route path="/personalized" element={<ProtectedRoute><PersonalizedLearningPage /></ProtectedRoute>} />
                 <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
                 <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
-                <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardsPage /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><NotificationCenterPage /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><AnalyticsPage /></ProtectedRoute>} />
                 <Route path="/reports" element={<ProtectedRoute><ReportsPage /></ProtectedRoute>} />
                 <Route path="/search" element={<ProtectedRoute><GlobalSearchPage /></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
 
                 {/* Parent Route */}
                 <Route path="/parent-dashboard" element={<ProtectedRoute><ParentDashboardPage /></ProtectedRoute>} />

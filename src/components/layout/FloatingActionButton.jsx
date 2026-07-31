@@ -8,7 +8,7 @@ export const FloatingActionButton = () => {
   return (
     <button
       onClick={() => navigate('/ai-tutor')}
-      className="fixed bottom-20 lg:bottom-8 right-6 z-40 p-4 rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 text-white shadow-2xl shadow-emerald-500/40 hover:scale-110 active:scale-95 transition-all group flex items-center gap-2 font-bold text-sm"
+      className="fixed bottom-20 lg:bottom-8 right-6 z-40 p-4 rounded-full bg-accent-primary text-white shadow-2xl shadow-sm hover:scale-110 active:scale-95 transition-all group flex items-center gap-2 font-bold text-sm"
       title="Ask AI Tutor"
     >
       <Bot className="w-6 h-6 animate-bounce" />

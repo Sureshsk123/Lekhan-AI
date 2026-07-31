@@ -11,7 +11,7 @@ export const NotificationCenterPage = () => {
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-7xl mx-auto w-full">
@@ -25,7 +25,7 @@ export const NotificationCenterPage = () => {
               <h1 className="text-2xl sm:text-3xl font-black flex items-center gap-2">
                 <Bell className="w-7 h-7 text-emerald-500" /> Notification Center
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Stay updated on daily practice reminders, streak updates, and achievements</p>
+              <p className="text-xs text-content-tertiary mt-1">Stay updated on daily practice reminders, streak updates, and achievements</p>
             </div>
 
             {unreadCount > 0 && (
@@ -49,7 +49,7 @@ export const NotificationCenterPage = () => {
                   className={`p-4 rounded-2xl border transition-colors flex items-start gap-4 cursor-pointer ${
                     !n.read
                       ? 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-300/50'
-                      : 'bg-slate-100/50 dark:bg-slate-800/50 border-slate-200/50 dark:border-slate-700/50'
+                      : 'bg-surface-tertiary/50 border-border-light/50'
                   }`}
                 >
                   <div className="p-2.5 rounded-xl bg-emerald-500 text-white shrink-0">
@@ -58,7 +58,7 @@ export const NotificationCenterPage = () => {
 
                   <div className="flex-1">
                     <h3 className="font-bold text-sm text-slate-800 dark:text-white">{n.title}</h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{n.message}</p>
+                    <p className="text-xs text-content-tertiary mt-1">{n.message}</p>
                     <span className="text-[10px] text-slate-400 mt-2 block">
                       {new Date(n.createdAt || Date.now()).toLocaleString()}
                     </span>

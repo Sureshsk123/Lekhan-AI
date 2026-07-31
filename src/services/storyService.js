@@ -1,12 +1,12 @@
 import apiClient from './apiClient';
 
 export const getStories = async (language, category) => {
-  const res = await apiClient.get(`/stories/${language}`, { params: { category } });
+  const res = await apiClient.get('/v1/stories', { params: { languageCode: language, level: category } });
   return res.data;
 };
 
 export const getStoryById = async (language, id) => {
-  const res = await apiClient.get(`/stories/${language}/${id}`);
+  const res = await apiClient.get(`/v1/stories/${id}`);
   return res.data;
 };
 

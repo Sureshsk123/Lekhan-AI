@@ -1,12 +1,12 @@
 import apiClient from './apiClient';
 
-export const generateQuiz = async (lessonId) => {
-  const res = await apiClient.post(`/quiz/generate/${lessonId}`);
+export const generateQuiz = async (quizId) => {
+  const res = await apiClient.get(`/v1/quizzes/${quizId}`);
   return res.data;
 };
 
-export const submitQuiz = async (payload) => {
-  const res = await apiClient.post('/quiz/submit', payload);
+export const submitQuiz = async (quizId, payload) => {
+  const res = await apiClient.post(`/v1/quizzes/${quizId}/submit`, payload);
   return res.data;
 };
 

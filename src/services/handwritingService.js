@@ -1,18 +1,18 @@
 import apiClient from './apiClient';
 
 export const evaluateHandwriting = async (payload) => {
-  const res = await apiClient.post('/handwriting/evaluate', payload);
+  const res = await apiClient.post('/v1/handwriting/evaluate', payload);
   return res.data;
 };
 
 export const getHandwritingHistory = async (params = {}) => {
-  const res = await apiClient.get('/handwriting/history', { params });
-  return res.data;
+  // Not implemented on backend yet
+  return { data: [] };
 };
 
 export const getProgressGraph = async () => {
-  const res = await apiClient.get('/handwriting/progress-graph');
-  return res.data;
+  // Not implemented on backend yet
+  return { data: [] };
 };
 
 export default {

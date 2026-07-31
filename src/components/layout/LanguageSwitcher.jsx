@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
 
 const LANGUAGES = [
-  { code: 'tamil', name: 'Tamil', flag: '🇮🇳' },
-  { code: 'hindi', name: 'Hindi', flag: '🇮🇳' },
-  { code: 'telugu', name: 'Telugu', flag: '🇮🇳' },
-  { code: 'malayalam', name: 'Malayalam', flag: '🇮🇳' },
-  { code: 'kannada', name: 'Kannada', flag: '🇮🇳' },
-  { code: 'english', name: 'English', flag: '🇬🇧' }
+  { code: 'tamil', name: 'Tamil', flag: '🇮🇳', native: 'தமிழ்' },
+  { code: 'telugu', name: 'Telugu', flag: '🇮🇳', native: 'తెలుగు' },
+  { code: 'hindi', name: 'Hindi', flag: '🇮🇳', native: 'हिन्दी' },
+  { code: 'malayalam', name: 'Malayalam', flag: '🇮🇳', native: 'മലയാളം' },
+  { code: 'kannada', name: 'Kannada', flag: '🇮🇳', native: 'ಕನ್ನಡ' },
 ];
 
 export const LanguageSwitcher = ({ selectedLanguage = 'tamil', onSelectLanguage }) => {
@@ -18,15 +17,14 @@ export const LanguageSwitcher = ({ selectedLanguage = 'tamil', onSelectLanguage 
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-4 py-2 rounded-full border-0 bg-slate-600 dark:bg-slate-700 text-white hover:bg-slate-500 transition-colors text-sm font-semibold shadow-sm"
       >
-        <Globe className="w-4 h-4 text-emerald-500" />
-        <span>{currentLang.flag} {currentLang.name}</span>
-        <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+        <Globe className="w-4 h-4 text-emerald-400" />
+        <span>{currentLang.flag}</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 py-1.5 z-50 animate-in fade-in slide-in-from-top-2">
+        <div className="absolute right-0 mt-2 w-40 bg-surface-primary rounded-2xl shadow-xl border border-border-light py-1.5 z-50 animate-in fade-in slide-in-from-top-2">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.code}
@@ -37,10 +35,16 @@ export const LanguageSwitcher = ({ selectedLanguage = 'tamil', onSelectLanguage 
               className={`w-full text-left px-4 py-2 text-sm flex items-center justify-between transition-colors ${
                 selectedLanguage === lang.code
                   ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-semibold'
-                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  : 'text-content-secondary hover:bg-slate-50 dark:hover:bg-slate-700'
               }`}
             >
-              <span>{lang.flag} {lang.name}</span>
+              <span className="flex items-center gap-2">
+                <span>{lang.flag}</span>
+                <span>
+                  <span className="font-semibold">{lang.name}</span>
+                  {lang.native && <span className="text-content-tertiary text-xs ml-1">· {lang.native}</span>}
+                </span>
+              </span>
             </button>
           ))}
         </div>

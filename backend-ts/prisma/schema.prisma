@@ -1,0 +1,452 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// CORE: USERS, ROLES, SESSIONS
+// ==========================================
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String?
+  firstName    String?
+  lastName     String?
+  avatarUrl    String?
+  roleId       String
+  role         Role      @relation(fields: [roleId], references: [id])
+  isVerified   Boolean   @default(false)
+  xp           Int       @default(0)
+  coins        Int       @default(0)
+  streak       Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  sessions             Session[]
+  progress             Progress[]
+  attempts             Attempt[]
+  speechRecords        SpeechRecord[]
+  writingRecords       WritingRecord[]
+  conversations        Conversation[]
+  bookmarks            Bookmark[]
+  certificates         Certificate[]
+  notifications        Notification[]
+  feedback             Feedback[]
+  subscriptions        Subscription[]
+  payments             Payment[]
+  settings             Setting?
+  auditLogs            AuditLog[]
+  dailyStreak          DailyStreak?
+  achievements         UserAchievement[]
+  rewards              UserReward[]
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String       @unique // ADMIN, STUDENT, PARENT, TEACHER
+  description String?
+  permissions Permission[]
+  users       User[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  roles       Role[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshToken String   @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+}
+
+// ==========================================
+// LEARNING DOMAIN: COURSES, MODULES, LESSONS
+// ==========================================
+
+model Language {
+  id        String   @id @default(uuid())
+  code      String   @unique // en, hi, ta
+  name      String
+  flagUrl   String?
+  courses   Course[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  languageId  String
+  language    Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  level       String   // BEGINNER, INTERMEDIATE, ADVANCED
+  modules     Module[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int
+  topics      Topic[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Topic {
+  id          String   @id @default(uuid())
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int
+  lessons     Lesson[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Lesson {
+  id          String     @id @default(uuid())
+  topicId     String
+  topic       Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  title       String
+  content     String     @db.Text
+  type        String     // GRAMMAR, VOCABULARY, READING, SPEAKING
+  xpReward    Int        @default(10)
+  order       Int
+  exercises   Exercise[]
+  quizzes     Quiz[]
+  progress    Progress[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Exercise {
+  id        String   @id @default(uuid())
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type      String   // FILL_BLANK, MULTIPLE_CHOICE, TRANSLATE
+  content   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==========================================
+// STORIES & READING
+// ==========================================
+
+model Story {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  languageCode String
+  level       String
+  pages       StoryPage[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model StoryPage {
+  id        String   @id @default(uuid())
+  storyId   String
+  story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  pageNumber Int
+  text      String   @db.Text
+  translation String? @db.Text
+  imageUrl  String?
+  audioUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==========================================
+// ASSESSMENTS & QUIZZES
+// ==========================================
+
+model Quiz {
+  id        String     @id @default(uuid())
+  lessonId  String?
+  lesson    Lesson?    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title     String
+  type      String     // STANDARD, AI_GENERATED
+  xpReward  Int        @default(15)
+  questions Question[]
+  attempts  Attempt[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Question {
+  id        String   @id @default(uuid())
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  text      String   @db.Text
+  type      String   // MULTIPLE_CHOICE, TRUE_FALSE
+  answers   Answer[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  text       String
+  isCorrect  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Attempt {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  score     Int
+  passed    Boolean
+  createdAt DateTime @default(now())
+}
+
+// ==========================================
+// GAMIFICATION: PROGRESS, STREAKS, ACHIEVEMENTS
+// ==========================================
+
+model Progress {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId     String
+  lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  isCompleted  Boolean   @default(false)
+  status       String    @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED
+  score        Int?
+  lastAccessed DateTime  @default(now())
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userId, lessonId])
+}
+
+model DailyStreak {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastActiveAt  DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Achievement {
+  id          String            @id @default(uuid())
+  name        String            @unique
+  description String
+  iconUrl     String?
+  xpBonus     Int               @default(0)
+  users       UserAchievement[]
+  createdAt   DateTime          @default(now())
+}
+
+model UserAchievement {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  earnedAt      DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+model Reward {
+  id          String       @id @default(uuid())
+  name        String
+  description String
+  cost        Int
+  category    String       @default("misc") // themes, avatars, frames, titles, boosters, badges
+  icon        String?
+  users       UserReward[]
+  createdAt   DateTime     @default(now())
+}
+
+model UserReward {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rewardId   String
+  reward     Reward   @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  redeemedAt DateTime @default(now())
+}
+
+model Badge {
+  id          String   @id @default(uuid())
+  name        String
+  imageUrl    String
+  description String
+  createdAt   DateTime @default(now())
+}
+
+// ==========================================
+// AI & ADVANCED FEATURES
+// ==========================================
+
+model SpeechRecord {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  audioUrl    String
+  transcript  String?  @db.Text
+  score       Int?
+  feedback    Json?
+  createdAt   DateTime @default(now())
+}
+
+
+model WritingRecord {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content     String   @db.Text
+  feedback    Json?
+  score       Int?
+  createdAt   DateTime @default(now())
+}
+
+model Conversation {
+  id           String      @id @default(uuid())
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  languageCode String
+  messages     AiMessage[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model AiMessage {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String       // USER, ASSISTANT
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+}
+
+// ==========================================
+// BUSINESS & NOTIFICATIONS
+// ==========================================
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // LESSON, STORY, WORD
+  referenceId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, type, referenceId])
+}
+
+model Certificate {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId  String
+  issuedAt  DateTime @default(now())
+  url       String
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      String   // FREE, PRO, PREMIUM
+  status    String   // ACTIVE, CANCELLED, PAST_DUE
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Float
+  currency  String   @default("USD")
+  status    String   // PENDING, COMPLETED, FAILED
+  invoiceId String?
+  createdAt DateTime @default(now())
+}
+
+model Setting {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme          String   @default("SYSTEM")
+  notifications  Boolean  @default(true)
+  dailyGoalMins  Int      @default(15)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  createdAt DateTime @default(now())
+}
+
+model FeatureFlag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isEnabled Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

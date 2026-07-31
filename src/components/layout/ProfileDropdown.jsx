@@ -14,16 +14,16 @@ export const ProfileDropdown = () => {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 p-1.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+        className="flex items-center gap-2 p-1.5 rounded-2xl hover:bg-surface-tertiary transition-colors focus:outline-none"
       >
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-bold text-sm flex items-center justify-center shadow-md">
+        <div className="w-8 h-8 rounded-xl bg-accent-primary text-white font-bold text-sm flex items-center justify-center shadow-md">
           {user.username ? user.username.charAt(0).toUpperCase() : 'U'}
         </div>
         <div className="hidden sm:block text-left">
           <p className="text-xs font-bold text-slate-800 dark:text-white leading-tight">
             {user.username}
           </p>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">
+          <span className="text-[10px] text-content-tertiary capitalize">
             {user.role || user.mode || 'student'}
           </span>
         </div>
@@ -31,10 +31,10 @@ export const ProfileDropdown = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 py-3 z-50 animate-in fade-in slide-in-from-top-2">
-          <div className="px-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+        <div className="absolute right-0 mt-2 w-64 bg-surface-primary rounded-3xl shadow-2xl border border-border-light py-3 z-50 animate-in fade-in slide-in-from-top-2">
+          <div className="px-4 pb-3 border-b border-border-light">
             <p className="font-bold text-slate-800 dark:text-white">{user.username}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+            <p className="text-xs text-content-tertiary truncate">{user.email}</p>
             <div className="flex items-center gap-3 mt-2">
               <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-lg">
                 ⚡ {user.xp || 0} XP
@@ -47,8 +47,14 @@ export const ProfileDropdown = () => {
 
           <div className="py-2">
             <button
+              onClick={() => { setOpen(false); navigate('/profile'); }}
+              className="w-full px-4 py-2 text-xs font-semibold text-content-secondary hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+            >
+              <User className="w-4 h-4 text-emerald-500" /> View Profile
+            </button>
+            <button
               onClick={() => { setOpen(false); navigate('/settings'); }}
-              className="w-full px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+              className="w-full px-4 py-2 text-xs font-semibold text-content-secondary hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
             >
               <Settings className="w-4 h-4 text-emerald-500" /> Account Settings
             </button>
@@ -70,7 +76,7 @@ export const ProfileDropdown = () => {
             )}
           </div>
 
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-700 px-2">
+          <div className="pt-2 border-t border-border-light px-2">
             <button
               onClick={() => {
                 setOpen(false);

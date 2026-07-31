@@ -74,10 +74,6 @@ export default function HomeScreen() {
           <Text style={styles.toolEmoji}>🎙️</Text>
           <Text style={styles.toolText}>Voice Practice</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.toolChip} onPress={() => router.push('/ocr')}>
-          <Text style={styles.toolEmoji}>📷</Text>
-          <Text style={styles.toolText}>Vision OCR</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.toolChip} onPress={() => router.push('/handwriting')}>
           <Text style={styles.toolEmoji}>✍️</Text>
           <Text style={styles.toolText}>Handwriting</Text>

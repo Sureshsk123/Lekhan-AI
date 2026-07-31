@@ -16,7 +16,7 @@ export const MobileBottomNav = () => {
   ];
 
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center justify-around shadow-2xl">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-primary/90 backdrop-blur-xl border-t border-border-light px-4 py-2 flex items-center justify-around shadow-2xl">
       {items.map((item) => {
         const Icon = item.icon;
         return (

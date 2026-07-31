@@ -11,7 +11,7 @@ export const Breadcrumbs = () => {
   }
 
   return (
-    <nav className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4 px-1" aria-label="Breadcrumb">
+    <nav className="flex items-center gap-2 text-xs text-content-tertiary mb-4 px-1" aria-label="Breadcrumb">
       <Link to="/dashboard" className="hover:text-emerald-500 flex items-center gap-1 transition-colors">
         <Home className="w-3.5 h-3.5" />
         <span>Home</span>
@@ -25,7 +25,7 @@ export const Breadcrumbs = () => {
           <React.Fragment key={to}>
             <ChevronRight className="w-3 h-3 text-slate-300 dark:text-slate-600 shrink-0" />
             {isLast ? (
-              <span className="font-semibold text-slate-800 dark:text-slate-200 capitalize">
+              <span className="font-semibold text-content-primary capitalize">
                 {formatted}
               </span>
             ) : (

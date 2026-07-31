@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Sidebar from '../../components/layout/Sidebar';
 import MobileBottomNav from '../../components/layout/MobileBottomNav';
 import Breadcrumbs from '../../components/layout/Breadcrumbs';
 import GlassCard from '../../components/common/GlassCard';
-import { Volume2, BookOpen, Languages, Sparkles } from 'lucide-react';
-import axios from 'axios';
+import { Volume2, Languages, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
+import apiClient from '../../services/apiClient';
 
 export const StoryReaderPage = () => {
   const { id } = useParams();
-  const [story, setStory] = useState(null);
-  const [showEnglish, setShowEnglish] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const [story, setStory]           = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [loading, setLoading]       = useState(true);
 
-  useEffect(() => {
-    fetchStory();
-  }, [id]);
+  useEffect(() => { fetchStory(); }, [id]);
 
   const fetchStory = async () => {
     try {
       setLoading(true);
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
-      const res = await axios.get(`${API_URL}/stories/detail/${id}`);
-      if (res.data && res.data.data) setStory(res.data.data);
+      const res = await apiClient.get(`/v1/stories/${id}`);
+      if (res.data?.data) setStory(res.data.data);
     } catch (err) {
-      console.error('Fetch story detail error:', err);
+      console.error('Fetch story error:', err);
     } finally {
       setLoading(false);
     }
@@ -40,68 +39,126 @@ export const StoryReaderPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500"></div>
+      <div className="min-h-screen bg-transparent flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
       </div>
     );
   }
 
+  if (!story) {
+    return (
+      <div className="min-h-screen bg-transparent flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold text-content-primary mb-2">Story not found</h2>
+            <button onClick={() => navigate('/stories')} className="text-sm text-amber-600 underline">
+              Browse Stories
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const pages = story.pages || [];
+  const page  = pages[currentPage];
+  const totalPages = pages.length;
+  const progress   = totalPages > 0 ? Math.round(((currentPage + 1) / totalPages) * 100) : 0;
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-5xl mx-auto w-full">
         <Sidebar />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-hidden pb-24 lg:pb-12">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-y-auto pb-24 lg:pb-12">
           <Breadcrumbs />
 
-          <GlassCard className="p-8 space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-4">
-              <div>
-                <span className="text-xs font-bold text-amber-500 uppercase tracking-widest">
-                  {story?.language || 'Cultural Story'}
-                </span>
-                <h1 className="text-2xl sm:text-4xl font-black text-slate-800 dark:text-white mt-1">
-                  {story?.title || 'Storybook Reader'}
-                </h1>
-              </div>
+          {/* Story Header */}
+          <div className="p-6 rounded-2xl bg-amber-500 text-white shadow-lg">
+            <span className="text-xs font-bold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">
+              {story.level} · {story.languageCode?.toUpperCase()}
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black mt-3">{story.title}</h1>
+            {story.description && (
+              <p className="text-sm text-amber-100 mt-1">{story.description}</p>
+            )}
+          </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowEnglish(!showEnglish)}
-                  className="px-3.5 py-2 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300 font-bold text-xs flex items-center gap-1.5 border border-amber-200"
-                >
-                  <Languages className="w-4 h-4" />
-                  <span>{showEnglish ? 'Original' : 'Translate'}</span>
-                </button>
-                <button
-                  onClick={() => playTTS(story?.content || '')}
-                  className="p-2.5 rounded-2xl bg-emerald-500 text-white shadow-md hover:scale-105 transition-all"
-                >
-                  <Volume2 className="w-4 h-4" />
-                </button>
+          {/* Progress */}
+          {totalPages > 0 && (
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs font-bold text-content-tertiary">
+                <span>Page {currentPage + 1} of {totalPages}</span>
+                <span>{progress}% Read</span>
+              </div>
+              <div className="w-full h-2 bg-surface-secondary rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-amber-500 rounded-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Page Content */}
+          <GlassCard className="p-6 sm:p-8 space-y-4">
+            <div className="flex items-center justify-between">
+              <BookOpen className="w-5 h-5 text-amber-500" />
+              <div className="flex gap-2">
+                {page && (
+                  <button
+                    onClick={() => setShowTranslation(!showTranslation)}
+                    className="px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-50 border border-amber-200 text-amber-700 flex items-center gap-1"
+                  >
+                    <Languages className="w-3.5 h-3.5" />
+                    {showTranslation ? 'Original' : 'English'}
+                  </button>
+                )}
+                {page && (
+                  <button
+                    onClick={() => playTTS(showTranslation ? (page.translation || page.text) : page.text)}
+                    className="p-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
+                  >
+                    <Volume2 className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
 
-            <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-200 font-serif">
-              {showEnglish ? (story?.translation || story?.content) : (story?.content || 'Story text...')}
-            </div>
-
-            {story?.vocabulary && story.vocabulary.length > 0 && (
-              <div className="pt-6 border-t border-slate-200 dark:border-slate-700">
-                <h3 className="font-bold text-sm text-slate-400 uppercase tracking-wider mb-3">Key Vocabulary</h3>
-                <div className="flex flex-wrap gap-2">
-                  {story.vocabulary.map((v, i) => (
-                    <span key={i} className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">
-                      {v.word} ({v.meaning})
-                    </span>
-                  ))}
-                </div>
-              </div>
+            {page ? (
+              <p className="text-lg sm:text-xl leading-relaxed text-content-primary font-serif">
+                {showTranslation ? (page.translation || page.text) : page.text}
+              </p>
+            ) : (
+              <p className="text-content-tertiary text-sm italic">No pages available for this story.</p>
             )}
           </GlassCard>
 
+          {/* Navigation */}
+          {totalPages > 0 && (
+            <div className="flex gap-3">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
+                disabled={currentPage === 0}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-border-light text-sm font-bold text-content-secondary hover:bg-surface-secondary transition-colors disabled:opacity-40"
+              >
+                <ChevronLeft className="w-4 h-4" /> Previous
+              </button>
+              <button
+                onClick={() => {
+                  if (currentPage < totalPages - 1) setCurrentPage(p => p + 1);
+                  else navigate('/stories');
+                }}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-amber-500 text-white text-sm font-bold hover:bg-amber-600 transition-colors"
+              >
+                {currentPage < totalPages - 1 ? 'Next Page' : 'Finish Story'}
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </main>
       </div>
 

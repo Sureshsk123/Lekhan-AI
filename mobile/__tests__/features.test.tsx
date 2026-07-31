@@ -1,7 +1,6 @@
 import lessonService from '../src/services/lessonService';
 import storyService from '../src/services/storyService';
 import aiTutorService from '../src/services/aiTutorService';
-import ocrService from '../src/services/ocrService';
 import handwritingService from '../src/services/handwritingService';
 import quizService from '../src/services/quizService';
 import shopService from '../src/services/shopService';
@@ -59,15 +58,6 @@ describe('Comprehensive Mobile Features & Services Tests', () => {
     });
   });
 
-  describe('Vision OCR Feature', () => {
-    it('parses image and returns extracted text', async () => {
-      (apiClient.post as jest.Mock).mockResolvedValueOnce({
-        data: { extractedText: 'Namaste Bharat', detectedLanguage: 'Hindi' },
-      });
-      const res = await ocrService.processVisionOCR('file://photo.jpg', 'Hindi');
-      expect(res.extractedText).toBe('Namaste Bharat');
-    });
-  });
 
   describe('Handwriting Feature', () => {
     it('evaluates character drawing stroke accuracy', async () => {

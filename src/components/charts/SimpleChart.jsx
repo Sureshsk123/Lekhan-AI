@@ -13,7 +13,7 @@ export const BarChart = ({ data = [], height = 150 }) => {
           <div key={idx} className="flex-1 flex flex-col items-center gap-1 group">
             <div className="w-full bg-slate-100 dark:bg-slate-700/60 rounded-xl h-full flex items-end p-0.5 relative overflow-hidden">
               <div
-                className="w-full bg-gradient-to-t from-emerald-500 to-teal-400 rounded-lg transition-all duration-500 group-hover:from-emerald-400 group-hover:to-teal-300"
+                className="w-full bg-accent-primary rounded-lg transition-all duration-500 group-hover:from-emerald-400 group-hover:to-teal-300"
                 style={{ height: `${pct}%` }}
               />
             </div>

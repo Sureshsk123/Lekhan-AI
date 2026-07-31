@@ -7,10 +7,12 @@ import Breadcrumbs from '../../components/layout/Breadcrumbs';
 import GlassCard from '../../components/common/GlassCard';
 import { Award, CheckCircle2, XCircle, ArrowRight, Sparkles, Volume2 } from 'lucide-react';
 import { generateQuiz, submitQuiz } from '../../services/quizService';
+import apiClient from '../../services/apiClient';
 
 export const QuizPage = () => {
   const { lessonId = 'ai-dynamic-quiz' } = useParams();
   const [questions, setQuestions] = useState([]);
+  const [actualLessonId, setActualLessonId] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -27,8 +29,10 @@ export const QuizPage = () => {
       const res = await generateQuiz(lessonId);
       if (res && res.data && res.data.questions) {
         setQuestions(res.data.questions);
+        if (res.data.lesson && res.data.lesson.id) {
+          setActualLessonId(res.data.lesson.id);
+        }
       } else {
-        // Fallback removed as per instructions
         setQuestions([]);
         console.warn('No questions returned from API');
       }
@@ -39,35 +43,53 @@ export const QuizPage = () => {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (selectedOption === null) return;
     const currentQ = questions[currentIndex];
-    const isCorrect = selectedOption === currentQ.correctAnswer;
-
-    const newAnswers = [...answers, { question: currentQ.question, selected: selectedOption, correct: currentQ.correctAnswer, isCorrect }];
+    
+    const newAnswers = [...answers, { questionId: currentQ.id, answerId: selectedOption.id }];
     setAnswers(newAnswers);
     setSelectedOption(null);
 
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // Calculate score & submit
-      const scorePct = Math.round((newAnswers.filter(a => a.isCorrect).length / questions.length) * 100);
-      const xpEarned = Math.round((scorePct / 100) * 50);
+      // Submit to backend
+      try {
+        setLoading(true);
+        const result = await submitQuiz(lessonId, { answers: newAnswers });
+        let { score, passed, correctCount, totalQuestions, xpEarned = 0, coinsEarned = 0, questionResults = [] } = result.data || {};
+        
+        if (passed && actualLessonId) {
+          try {
+            const compRes = await apiClient.post(`/v1/lessons/complete/${actualLessonId}`);
+            if (compRes.data && compRes.data.data) {
+              xpEarned = compRes.data.data.xpEarned || xpEarned;
+              coinsEarned = compRes.data.data.coinsEarned || coinsEarned;
+            }
+          } catch (err) {
+            console.error('Failed to complete lesson auto-unlock', err);
+          }
+        }
 
-      submitQuiz({
-        lessonId,
-        score: scorePct,
-        answers: newAnswers
-      }).catch(() => {});
-
-      navigate('/quiz-results', { state: { scorePct, xpEarned, answers: newAnswers } });
+        navigate('/quiz-results', {
+          state: {
+            scorePct: score, passed, xpEarned, coinsEarned,
+            correctCount, totalQuestions, questionResults,
+            quizId: lessonId,
+            lessonId: actualLessonId  // Actual lesson ID for "Return to Lesson" navigation
+          }
+        });
+      } catch (err) {
+        console.error('Failed to submit quiz', err);
+        setLoading(false);
+      }
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-transparent text-content-primary flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     );
@@ -75,7 +97,7 @@ export const QuizPage = () => {
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+      <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
         <Navbar />
         <div className="flex-1 flex max-w-4xl mx-auto w-full">
           <Sidebar />
@@ -96,7 +118,7 @@ export const QuizPage = () => {
   const progressPct = Math.round(((currentIndex + 1) / questions.length) * 100);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-4xl mx-auto w-full">
@@ -113,7 +135,7 @@ export const QuizPage = () => {
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-3 overflow-hidden p-0.5">
               <div
-                className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300"
+                className="bg-accent-primary h-full rounded-full transition-all duration-300"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
@@ -123,24 +145,24 @@ export const QuizPage = () => {
           <GlassCard className="p-6 sm:p-8 space-y-6">
             <div className="flex items-start justify-between gap-4">
               <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-white leading-snug">
-                {currentQ?.question}
+                {currentQ?.text}
               </h2>
             </div>
 
             <div className="space-y-3 pt-2">
-              {currentQ?.options?.map((opt, i) => {
-                const selected = selectedOption === opt;
+              {currentQ?.answers?.map((opt) => {
+                const selected = selectedOption?.id === opt.id;
                 return (
                   <button
-                    key={i}
+                    key={opt.id}
                     onClick={() => setSelectedOption(opt)}
                     className={`w-full p-4 rounded-2xl text-left text-sm font-bold transition-all border-2 flex items-center justify-between ${
                       selected
                         ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 shadow-md scale-[1.01]'
-                        : 'border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-800/80 text-slate-700 dark:text-slate-200'
+                        : 'border-slate-200/60 dark:border-slate-700/60 hover:bg-surface-tertiary/80 text-content-secondary'
                     }`}
                   >
-                    <span>{opt}</span>
+                    <span>{opt.text}</span>
                     {selected && <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />}
                   </button>
                 );
@@ -151,7 +173,7 @@ export const QuizPage = () => {
               <button
                 onClick={handleNext}
                 disabled={selectedOption === null}
-                className="px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2"
+                className="px-6 py-3 rounded-2xl bg-accent-primary text-white font-bold text-sm shadow-lg hover:scale-105 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2"
               >
                 <span>{currentIndex + 1 === questions.length ? 'Finish Quiz' : 'Next Question'}</span>
                 <ArrowRight className="w-4 h-4" />

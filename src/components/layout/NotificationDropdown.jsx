@@ -12,7 +12,7 @@ export const NotificationDropdown = () => {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+        className="relative p-2 rounded-xl text-content-tertiary hover:bg-surface-tertiary transition-colors focus:outline-none"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
@@ -24,8 +24,8 @@ export const NotificationDropdown = () => {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 py-3 z-50 animate-in fade-in slide-in-from-top-2">
-          <div className="flex items-center justify-between px-4 pb-2 border-b border-slate-100 dark:border-slate-700">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-surface-primary rounded-3xl shadow-2xl border border-border-light py-3 z-50 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center justify-between px-4 pb-2 border-b border-border-light">
             <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
               <Bell className="w-4 h-4 text-emerald-500" /> Notifications
             </h3>
@@ -63,7 +63,7 @@ export const NotificationDropdown = () => {
                     <p className="text-xs font-bold text-slate-800 dark:text-white truncate">
                       {notif.title}
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 line-clamp-2">
+                    <p className="text-xs text-content-tertiary mt-0.5 line-clamp-2">
                       {notif.message}
                     </p>
                     <span className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 block">
@@ -75,7 +75,7 @@ export const NotificationDropdown = () => {
             )}
           </div>
 
-          <div className="pt-2 px-4 border-t border-slate-100 dark:border-slate-700 text-center">
+          <div className="pt-2 px-4 border-t border-border-light text-center">
             <button
               onClick={() => {
                 setOpen(false);

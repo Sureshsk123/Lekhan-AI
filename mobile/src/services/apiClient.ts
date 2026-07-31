@@ -9,9 +9,10 @@ const getBaseURL = () => {
   }
   // Android Emulator uses 10.0.2.2 to access host localhost
   if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:5001/api';
+    return 'http://10.0.2.2:5005/api';
   }
-  return 'http://localhost:5001/api';
+  // iOS simulator or Expo Web / Local host
+  return 'http://localhost:5005/api';
 };
 
 export const API_URL = getBaseURL();

@@ -6,17 +6,12 @@ import {
   Bot,
   BookOpen,
   Sparkles,
-  Award,
   PenTool,
-  Camera,
-  Brain,
   ShoppingBag,
   Package,
-  Trophy,
   Users,
+  User as UserIcon,
   Shield,
-  BarChart2,
-  FileText,
   Settings
 } from 'lucide-react';
 
@@ -29,15 +24,9 @@ export const Sidebar = () => {
     { to: '/ai-tutor', label: 'AI Tutor', icon: Bot, badge: 'AI' },
     { to: `/lessons/${activeLanguage || 'tamil'}`, label: 'Lessons', icon: BookOpen },
     { to: `/stories/${activeLanguage || 'tamil'}`, label: 'Stories', icon: Sparkles },
-    { to: '/quiz/remedial-quiz', label: 'Quizzes', icon: Award },
     { to: `/handwriting/${activeLanguage || 'tamil'}`, label: 'Handwriting', icon: PenTool },
-    { to: '/vision-ocr', label: 'Vision OCR', icon: Camera },
-    { to: '/personalized', label: 'Personalized AI', icon: Brain },
     { to: '/shop', label: 'Shop', icon: ShoppingBag },
     { to: '/inventory', label: 'Inventory', icon: Package },
-    { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-    { to: '/analytics', label: 'Analytics', icon: BarChart2 },
-    { to: '/reports', label: 'Reports', icon: FileText }
   ];
 
   if (user.role === 'parent' || user.mode === 'parent') {
@@ -49,7 +38,7 @@ export const Sidebar = () => {
   }
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-white/70 dark:bg-slate-900/70 border-r border-slate-200/60 dark:border-slate-800/80 backdrop-blur-xl min-h-[calc(100vh-4rem)] p-4 space-y-6">
+    <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-surface-primary/70 dark:bg-surface-primary/70 border-r border-border-light/60 backdrop-blur-xl min-h-[calc(100vh-4rem)] p-4 space-y-6">
       
       {/* Quick User Stats Pill */}
       <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-cyan-500/10 border border-emerald-500/20 dark:border-emerald-500/30 flex items-center justify-between">
@@ -75,8 +64,8 @@ export const Sidebar = () => {
               className={({ isActive }) =>
                 `flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all group ${
                   isActive
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 scale-[1.02]'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80'
+                    ? 'bg-accent-primary text-white shadow-lg shadow-sm scale-[1.02]'
+                    : 'text-content-tertiary hover:bg-surface-tertiary/80'
                 }`
               }
             >
@@ -94,15 +83,28 @@ export const Sidebar = () => {
         })}
       </nav>
 
-      {/* Settings Bottom Footer */}
-      <div className="pt-3 border-t border-slate-200/60 dark:border-slate-800/80">
+      {/* Profile & Settings Bottom Footer */}
+      <div className="pt-3 border-t border-border-light/60 space-y-1">
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
+              isActive
+                ? 'bg-emerald-500 text-white shadow-md'
+                : 'text-content-tertiary hover:bg-surface-tertiary'
+            }`
+          }
+        >
+          <UserIcon className="w-4 h-4" />
+          <span>Profile</span>
+        </NavLink>
         <NavLink
           to="/settings"
           className={({ isActive }) =>
             `flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
               isActive
                 ? 'bg-emerald-500 text-white shadow-md'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                : 'text-content-tertiary hover:bg-surface-tertiary'
             }`
           }
         >

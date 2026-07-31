@@ -32,9 +32,9 @@ export const GlobalSearchModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-start justify-center pt-16 px-4 animate-in fade-in">
-      <div className="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden">
-        <div className="flex items-center gap-3 p-4 border-b border-slate-100 dark:border-slate-700">
+    <div className="fixed inset-0 bg-surface-primary/60 backdrop-blur-md z-50 flex items-start justify-center pt-16 px-4 animate-in fade-in">
+      <div className="w-full max-w-2xl bg-surface-primary rounded-3xl shadow-2xl border border-border-light overflow-hidden">
+        <div className="flex items-center gap-3 p-4 border-b border-border-light">
           <Search className="w-5 h-5 text-emerald-500 shrink-0" />
           <input
             type="text"
@@ -74,7 +74,7 @@ export const GlobalSearchModal = ({ isOpen, onClose }) => {
                         onClick={() => { onClose(); navigate(`/lesson/${l._id}`); }}
                         className="p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center justify-between transition-colors"
                       >
-                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{l.title}</span>
+                        <span className="text-sm font-semibold text-content-secondary">{l.title}</span>
                         <ArrowRight className="w-4 h-4 text-slate-400" />
                       </div>
                     ))}
@@ -94,7 +94,7 @@ export const GlobalSearchModal = ({ isOpen, onClose }) => {
                         onClick={() => { onClose(); navigate(`/story/${s._id}`); }}
                         className="p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center justify-between transition-colors"
                       >
-                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{s.title}</span>
+                        <span className="text-sm font-semibold text-content-secondary">{s.title}</span>
                         <ArrowRight className="w-4 h-4 text-slate-400" />
                       </div>
                     ))}
@@ -114,7 +114,7 @@ export const GlobalSearchModal = ({ isOpen, onClose }) => {
                         onClick={() => { onClose(); navigate('/shop'); }}
                         className="p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer flex items-center justify-between transition-colors"
                       >
-                        <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{i.name}</span>
+                        <span className="text-sm font-semibold text-content-secondary">{i.name}</span>
                         <span className="text-xs text-amber-500 font-bold">💎 {i.price}</span>
                       </div>
                     ))}

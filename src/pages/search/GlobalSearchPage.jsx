@@ -36,7 +36,7 @@ export const GlobalSearchPage = () => {
   }, [query, category]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-7xl mx-auto w-full">
@@ -49,7 +49,7 @@ export const GlobalSearchPage = () => {
             <h1 className="text-2xl sm:text-3xl font-black flex items-center gap-2">
               <Search className="w-7 h-7 text-emerald-500" /> Unified Global Search Engine
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Instant multi-category search across lessons, stories, vocabulary, users, and shop items</p>
+            <p className="text-xs text-content-tertiary mt-1">Instant multi-category search across lessons, stories, vocabulary, users, and shop items</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
@@ -60,7 +60,7 @@ export const GlobalSearchPage = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Type to search anything..."
-                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-surface-primary border border-border-light text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
                 autoFocus
               />
             </div>
@@ -68,7 +68,7 @@ export const GlobalSearchPage = () => {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="px-4 py-3.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold focus:outline-none"
+              className="px-4 py-3.5 rounded-2xl bg-surface-primary border border-border-light text-xs font-bold focus:outline-none"
             >
               <option value="all">All Categories</option>
               <option value="lessons">Lessons</option>
@@ -93,7 +93,7 @@ export const GlobalSearchPage = () => {
                       <div
                         key={l._id}
                         onClick={() => navigate(`/lesson/${l._id}`)}
-                        className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 cursor-pointer flex items-center justify-between transition-colors"
+                        className="p-3 rounded-2xl bg-surface-tertiary hover:bg-emerald-50 dark:hover:bg-emerald-950/40 cursor-pointer flex items-center justify-between transition-colors"
                       >
                         <span className="font-bold text-sm">{l.title}</span>
                         <ArrowRight className="w-4 h-4 text-slate-400" />
@@ -111,7 +111,7 @@ export const GlobalSearchPage = () => {
                       <div
                         key={s._id}
                         onClick={() => navigate(`/story/${s._id}`)}
-                        className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 cursor-pointer flex items-center justify-between transition-colors"
+                        className="p-3 rounded-2xl bg-surface-tertiary hover:bg-amber-50 dark:hover:bg-amber-950/40 cursor-pointer flex items-center justify-between transition-colors"
                       >
                         <span className="font-bold text-sm">{s.title}</span>
                         <ArrowRight className="w-4 h-4 text-slate-400" />

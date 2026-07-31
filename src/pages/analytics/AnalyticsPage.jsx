@@ -29,7 +29,7 @@ export const AnalyticsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-7xl mx-auto w-full">
@@ -42,7 +42,7 @@ export const AnalyticsPage = () => {
             <h1 className="text-2xl sm:text-3xl font-black flex items-center gap-2">
               <BarChart2 className="w-7 h-7 text-indigo-500" /> Learning Analytics & Proficiency
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Deep breakdown of learning hours, accuracy ratings, and language progress</p>
+            <p className="text-xs text-content-tertiary mt-1">Deep breakdown of learning hours, accuracy ratings, and language progress</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -56,25 +56,27 @@ export const AnalyticsPage = () => {
               </GlassCard>
 
               {/* Language Proficiency List */}
-              <GlassCard className="p-6 space-y-4">
-                <h3 className="font-extrabold text-base">Language Proficiency Ratings</h3>
-                <div className="space-y-3">
-                  {Object.entries(metrics?.languageProficiency || { tamil: 85, hindi: 70, telugu: 60, english: 90 }).map(([lang, rating]) => (
-                    <div key={lang} className="space-y-1">
-                      <div className="flex justify-between text-xs font-bold capitalize">
-                        <span>{lang}</span>
-                        <span className="text-emerald-500">{rating}%</span>
+              {metrics?.languageProficiency && Object.keys(metrics.languageProficiency).length > 0 && (
+                <GlassCard className="p-6 space-y-4">
+                  <h3 className="font-extrabold text-base">Language Proficiency Ratings</h3>
+                  <div className="space-y-3">
+                    {Object.entries(metrics.languageProficiency).map(([lang, rating]) => (
+                      <div key={lang} className="space-y-1">
+                        <div className="flex justify-between text-xs font-bold capitalize">
+                          <span>{lang}</span>
+                          <span className="text-emerald-500">{rating}%</span>
+                        </div>
+                        <div className="w-full bg-surface-tertiary rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-accent-primary h-full rounded-full transition-all duration-500"
+                            style={{ width: `${rating}%` }}
+                          />
+                        </div>
                       </div>
-                      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500"
-                          style={{ width: `${rating}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </GlassCard>
+                    ))}
+                  </div>
+                </GlassCard>
+              )}
             </div>
 
             <div className="space-y-6">

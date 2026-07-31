@@ -40,7 +40,7 @@ export const InventoryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
       <Navbar />
 
       <div className="flex-1 flex max-w-7xl mx-auto w-full">
@@ -53,7 +53,7 @@ export const InventoryPage = () => {
             <h1 className="text-2xl sm:text-3xl font-black flex items-center gap-2">
               <Package className="w-7 h-7 text-teal-500" /> User Inventory & Equipped Cosmetics
             </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Manage owned themes, avatars, titles, and active booster multipliers</p>
+            <p className="text-xs text-content-tertiary mt-1">Manage owned themes, avatars, titles, and active booster multipliers</p>
           </div>
 
           {loading ? (
@@ -70,7 +70,7 @@ export const InventoryPage = () => {
                     <p className="text-xs text-slate-400">Purchased {new Date(item.purchasedAt || Date.now()).toLocaleDateString()}</p>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between">
+                  <div className="pt-4 mt-4 border-t border-border-light/60 flex items-center justify-between">
                     <button
                       onClick={() => handleEquip(item.itemId, item.itemType)}
                       className="w-full py-2 rounded-xl bg-emerald-500 text-white font-bold text-xs shadow-md hover:scale-[1.02] transition-all"
