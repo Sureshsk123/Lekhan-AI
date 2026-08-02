@@ -8,6 +8,38 @@ export default {
   theme: {
     extend: {
       colors: {
+        primary: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60A5FA',
+          500: '#3B82F6',
+          600: '#2563EB',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
+        accent: {
+          DEFAULT: '#14B8A6',
+          light: '#2dd4bf',
+          dark: '#0d9488',
+        },
+        success: {
+          DEFAULT: '#22C55E',
+          light: '#4ade80',
+          dark: '#16a34a',
+        },
+        warning: {
+          DEFAULT: '#F59E0B',
+          light: '#fbbf24',
+          dark: '#d97706',
+        },
+        error: {
+          DEFAULT: '#EF4444',
+          light: '#f87171',
+          dark: '#dc2626',
+        },
         brand: {
           50: '#f8fafc',
           100: '#f1f5f9',
@@ -39,14 +71,11 @@ export default {
           light: 'var(--border-light)',
           strong: 'var(--border-strong)',
         },
-        accent: {
-          primary: 'var(--accent-primary)',
-          secondary: 'var(--accent-secondary)',
-          tertiary: 'var(--accent-tertiary)',
-        }
       },
       fontFamily: {
         'sans': ['Inter', 'system-ui', 'sans-serif'],
+        'heading': ['Poppins', 'Manrope', 'Inter', 'sans-serif'],
+        'display': ['Manrope', 'Poppins', 'Inter', 'sans-serif'],
       },
     },
   },

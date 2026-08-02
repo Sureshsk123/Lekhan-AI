@@ -1,72 +1,151 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../../components/layout/Navbar';
-import { Users, BookOpen, Trophy, ShieldCheck, Activity, BarChart } from 'lucide-react';
+import Sidebar from '../../components/layout/Sidebar';
+import MobileBottomNav from '../../components/layout/MobileBottomNav';
+import { Users, BookOpen, ShieldCheck, Activity, BarChart, Server, Cpu, Database, Plus, Search, MoreVertical, CheckCircle2 } from 'lucide-react';
 
 export const AdminDashboardPage = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const usersList = [
+    { id: '1', name: 'Sofia Rodriguez', email: 'sofia@example.com', role: 'Student', status: 'Active', xp: 4850 },
+    { id: '2', name: 'Lucas Dubois', email: 'lucas@example.com', role: 'Student', status: 'Active', xp: 4210 },
+    { id: '3', name: 'Dr. Sarah Jenkins', email: 'sarah@example.com', role: 'Parent', status: 'Active', xp: 0 },
+    { id: '4', name: 'System Admin', email: 'admin@langsphere.app', role: 'Admin', status: 'Active', xp: 9990 },
+  ];
+
+  const filteredUsers = usersList.filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase()) || u.email.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
-    <div className="min-h-screen bg-transparent flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col font-sans">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8 flex justify-between items-end">
-          <div>
-            <h1 className="text-3xl font-bold text-content-primary">Admin Overview</h1>
-            <p className="text-content-secondary mt-1">Enterprise management console</p>
-          </div>
-          <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium shadow-sm transition-colors">
-            Generate Report
-          </button>
-        </div>
+      <div className="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+        <Sidebar />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Stats Cards */}
-          <div className="p-6 rounded-2xl bg-surface-primary border border-border-light shadow-sm flex items-center justify-between hover:border-emerald-500/50 transition-colors cursor-default">
-            <div>
-              <p className="text-sm font-medium text-content-secondary">Total Users</p>
-              <h3 className="text-2xl font-bold text-content-primary mt-1">12,450</h3>
-            </div>
-            <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <Users className="w-6 h-6 text-emerald-500" />
-            </div>
-          </div>
+        <main className="flex-1 space-y-6 pb-24 md:pb-8 min-w-0">
           
-          <div className="p-6 rounded-2xl bg-surface-primary border border-border-light shadow-sm flex items-center justify-between hover:border-blue-500/50 transition-colors cursor-default">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-card p-6 border-slate-200 dark:border-slate-800">
             <div>
-              <p className="text-sm font-medium text-content-secondary">Active Courses</p>
-              <h3 className="text-2xl font-bold text-content-primary mt-1">45</h3>
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <h1 className="text-2xl font-extrabold font-heading text-slate-900 dark:text-white">
+                  Enterprise Admin Control Room
+                </h1>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Monitor system metrics, role-based access control, AI API telemetry, and content management
+              </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <BookOpen className="w-6 h-6 text-blue-500" />
+
+            <button className="btn-primary text-xs py-2.5 px-4 shadow-lg shadow-blue-500/20">
+              Export System Audit Report
+            </button>
+          </div>
+
+          {/* Metrics Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="glass-card p-4 border-slate-200 dark:border-slate-800">
+              <span className="text-[10px] font-extrabold uppercase text-slate-400">Total Users</span>
+              <p className="text-xl font-extrabold font-heading text-slate-900 dark:text-white mt-1">
+                12,450
+              </p>
+              <span className="text-[10px] font-bold text-emerald-500">▲ +14% this month</span>
+            </div>
+
+            <div className="glass-card p-4 border-slate-200 dark:border-slate-800">
+              <span className="text-[10px] font-extrabold uppercase text-slate-400">Active Courses</span>
+              <p className="text-xl font-extrabold font-heading text-blue-500 mt-1">
+                48 Lessons
+              </p>
+              <span className="text-[10px] font-bold text-slate-400">across 8 languages</span>
+            </div>
+
+            <div className="glass-card p-4 border-slate-200 dark:border-slate-800">
+              <span className="text-[10px] font-extrabold uppercase text-slate-400">AI API Requests</span>
+              <p className="text-xl font-extrabold font-heading text-teal-500 mt-1">
+                184,290
+              </p>
+              <span className="text-[10px] font-bold text-teal-500">Gemini 2.5 Active</span>
+            </div>
+
+            <div className="glass-card p-4 border-slate-200 dark:border-slate-800">
+              <span className="text-[10px] font-extrabold uppercase text-slate-400">System Health</span>
+              <p className="text-xl font-extrabold font-heading text-emerald-500 mt-1">
+                99.98%
+              </p>
+              <span className="text-[10px] font-bold text-emerald-500">All Nodes Operational 🟢</span>
             </div>
           </div>
 
-          <div className="p-6 rounded-2xl bg-surface-primary border border-border-light shadow-sm flex items-center justify-between hover:border-purple-500/50 transition-colors cursor-default">
-            <div>
-              <p className="text-sm font-medium text-content-secondary">System Health</p>
-              <h3 className="text-2xl font-bold text-content-primary mt-1">99.9%</h3>
-            </div>
-            <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-              <Activity className="w-6 h-6 text-purple-500" />
-            </div>
-          </div>
-        </div>
+          {/* Role Management Table */}
+          <div className="glass-card p-6 space-y-4 border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-extrabold text-slate-900 dark:text-white">
+                User Account Management
+              </h3>
 
-        {/* Charts Area Placeholder */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="p-6 rounded-2xl bg-surface-primary border border-border-light shadow-sm min-h-[300px] flex items-center justify-center">
-            <div className="text-center">
-              <BarChart className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-              <p className="text-content-secondary">Revenue Analytics Widget</p>
+              <div className="relative w-48 sm:w-64">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search user..."
+                  className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-800 text-[10px] font-extrabold uppercase text-slate-400">
+                    <th className="pb-3">User</th>
+                    <th className="pb-3">Role</th>
+                    <th className="pb-3">Status</th>
+                    <th className="pb-3">XP Score</th>
+                    <th className="pb-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                  {filteredUsers.map((u) => (
+                    <tr key={u.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="py-3">
+                        <p className="font-extrabold text-slate-900 dark:text-white">{u.name}</p>
+                        <p className="text-[10px] text-slate-400">{u.email}</p>
+                      </td>
+                      <td className="py-3">
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                          u.role === 'Admin' ? 'bg-indigo-500/15 text-indigo-500' : u.role === 'Parent' ? 'bg-teal-500/15 text-teal-500' : 'bg-blue-500/15 text-blue-500'
+                        }`}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td className="py-3">
+                        <span className="text-emerald-500 font-bold">🟢 {u.status}</span>
+                      </td>
+                      <td className="py-3 font-bold text-amber-500">
+                        ⚡ {u.xp} XP
+                      </td>
+                      <td className="py-3 text-right">
+                        <button className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-          <div className="p-6 rounded-2xl bg-surface-primary border border-border-light shadow-sm min-h-[300px] flex items-center justify-center">
-            <div className="text-center">
-              <ShieldCheck className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-              <p className="text-content-secondary">Security Audit Logs</p>
-            </div>
-          </div>
-        </div>
-      </main>
+        </main>
+      </div>
+
+      <MobileBottomNav />
     </div>
   );
 };

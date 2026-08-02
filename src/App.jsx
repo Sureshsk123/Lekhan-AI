@@ -30,14 +30,22 @@ import GlobalSearchPage from './pages/search/GlobalSearchPage';
 import SettingsPage from './pages/settings/SettingsPage';
 import ProfilePage from './pages/profile/ProfilePage';
 
+// New Pages
+import OcrScannerPage from './pages/ocr/OcrScannerPage';
+import VocabularyPage from './pages/vocabulary/VocabularyPage';
+import LeaderboardPage from './pages/leaderboard/LeaderboardPage';
+import PronunciationPage from './pages/pronunciation/PronunciationPage';
+import AchievementsPage from './pages/achievements/AchievementsPage';
+
 // Protected Route Guard
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-transparent flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center gap-3">
+        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <span className="text-xs font-bold text-slate-400">Loading LangSphere AI...</span>
       </div>
     );
   }
@@ -59,7 +67,7 @@ function App() {
       <AuthProvider>
         <NotificationProvider>
           <Router>
-            <div className="min-h-screen bg-transparent text-content-primary transition-colors">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors">
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
@@ -78,6 +86,11 @@ function App() {
                 <Route path="/quiz/:lessonId?" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
                 <Route path="/quiz-results" element={<ProtectedRoute><QuizResultsPage /></ProtectedRoute>} />
                 <Route path="/handwriting/:language?" element={<ProtectedRoute><HandwritingCanvasPage /></ProtectedRoute>} />
+                <Route path="/ocr" element={<ProtectedRoute><OcrScannerPage /></ProtectedRoute>} />
+                <Route path="/vocabulary" element={<ProtectedRoute><VocabularyPage /></ProtectedRoute>} />
+                <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
+                <Route path="/pronunciation" element={<ProtectedRoute><PronunciationPage /></ProtectedRoute>} />
+                <Route path="/achievements" element={<ProtectedRoute><AchievementsPage /></ProtectedRoute>} />
                 <Route path="/shop" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
                 <Route path="/inventory" element={<ProtectedRoute><InventoryPage /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><NotificationCenterPage /></ProtectedRoute>} />

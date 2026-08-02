@@ -2,16 +2,18 @@ import axios from 'axios';
 import { getSecureItem, removeSecureItem } from '../utils/secureStore';
 import { Platform } from 'react-native';
 
-// Standard default API Base URL connecting to backend server on localhost:5001/api
 const getBaseURL = () => {
+  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
+    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  }
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
-  // Android Emulator uses 10.0.2.2 to access host localhost
+  // Android Emulator default fallback
   if (Platform.OS === 'android') {
     return 'http://10.0.2.2:5005/api';
   }
-  // iOS simulator or Expo Web / Local host
+  // iOS simulator / Expo Web default fallback
   return 'http://localhost:5005/api';
 };
 

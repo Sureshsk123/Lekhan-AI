@@ -1,102 +1,83 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Sidebar from '../../components/layout/Sidebar';
 import MobileBottomNav from '../../components/layout/MobileBottomNav';
-import GlassCard from '../../components/common/GlassCard';
-import { Award, CheckCircle2, XCircle, RefreshCw, ArrowRight, Sparkles } from 'lucide-react';
+import { Award, CheckCircle2, XCircle, RefreshCw, ArrowRight, Sparkles, Trophy, Zap, Coins } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 export const QuizResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { scorePct = 0, passed = false, xpEarned = 0, coinsEarned = 0, questionResults = [], quizId, lessonId } = location.state || {};
+  const { scorePct = 85, passed = true, xpEarned = 100, coinsEarned = 30, correctCount = 4, totalQuestions = 5, lessonId = 'spanish' } = location.state || {};
+
+  useEffect(() => {
+    if (passed) {
+      confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+    }
+  }, [passed]);
 
   return (
-    <div className="min-h-screen bg-transparent text-content-primary flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col font-sans">
       <Navbar />
 
-      <div className="flex-1 flex max-w-4xl mx-auto w-full">
+      <div className="flex-1 flex max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
         <Sidebar />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 overflow-hidden pb-24 lg:pb-12">
-          
-          <GlassCard className="p-8 text-center space-y-6">
-            <div className={`w-20 h-20 rounded-full text-white flex items-center justify-center mx-auto shadow-xl shadow-sm text-4xl animate-bounce ${passed ? 'bg-emerald-500' : 'bg-rose-500'}`}>
-              {passed ? '🎉' : '💪'}
+        <main className="flex-1 space-y-6 pb-24 md:pb-8 min-w-0">
+          <div className="glass-card p-8 text-center space-y-6 border-slate-200 dark:border-slate-800">
+            <div className={`w-20 h-20 rounded-3xl text-white flex items-center justify-center mx-auto shadow-2xl text-4xl animate-bounce ${
+              passed ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 shadow-emerald-500/30' : 'bg-gradient-to-tr from-rose-500 to-amber-500 shadow-rose-500/30'
+            }`}>
+              {passed ? '🏆' : '💪'}
             </div>
 
-            <div>
-              <span className={`text-xs font-black uppercase tracking-widest ${passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                {passed ? 'Quiz Passed!' : 'Quiz Failed'}
+            <div className="space-y-2">
+              <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
+                passed ? 'bg-emerald-500/15 text-emerald-500' : 'bg-rose-500/15 text-rose-500'
+              }`}>
+                {passed ? 'Quiz Passed!' : 'Practice Needed'}
               </span>
-              <h1 className="text-3xl sm:text-5xl font-black text-slate-800 dark:text-white mt-1">
-                {scorePct >= 80 ? 'Outstanding Job!' : passed ? 'Good Effort!' : 'Keep Practicing!'}
+              <h1 className="text-3xl sm:text-4xl font-extrabold font-heading text-slate-900 dark:text-white">
+                {scorePct >= 80 ? 'Outstanding Score!' : passed ? 'Great Job!' : 'Keep Going!'}
               </h1>
-              <p className="text-sm text-content-tertiary mt-2">
-                You scored <strong className={passed ? "text-emerald-500 font-black" : "text-rose-500 font-black"}>{scorePct}%</strong>.
-                {passed 
-                  ? ' Great work! Your progress has been saved.' 
-                  : ' You need at least 60% to pass. Try again!'}
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+                You answered <strong className="text-slate-900 dark:text-white font-extrabold">{correctCount} of {totalQuestions}</strong> questions correctly ({scorePct}% score).
               </p>
-              {passed && (xpEarned > 0 || coinsEarned > 0) && (
-                <div className="flex items-center justify-center gap-4 mt-3">
-                  {xpEarned > 0 && (
-                    <span className="text-sm font-bold text-amber-500">⚡ +{xpEarned} XP</span>
-                  )}
-                  {coinsEarned > 0 && (
-                    <span className="text-sm font-bold text-yellow-600">🪙 +{coinsEarned} Coins</span>
-                  )}
-                </div>
-              )}
             </div>
 
-            {/* Answer Breakdown */}
-            <div className="text-left space-y-3 pt-4 border-t border-border-light/60">
-              <h3 className="font-extrabold text-sm text-slate-400 uppercase tracking-wider">Answer Breakdown</h3>
-              {questionResults.map((q, idx) => (
-                <div key={idx} className="p-3.5 rounded-2xl bg-surface-tertiary/70 flex items-start gap-3 text-xs">
-                  {q.isCorrect ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-rose-500 shrink-0" />
-                  )}
-                  <div>
-                    <p className="font-bold text-slate-800 dark:text-white">{q.questionText}</p>
-                    {!q.isCorrect && (
-                      <p className="text-slate-500 mt-0.5">Correct Answer: <span className="text-emerald-500 font-bold">{q.correctAnswerText || 'Unknown'}</span></p>
-                    )}
-                  </div>
+            {/* XP & Coins Reward Badge Banner */}
+            {passed && (
+              <div className="flex items-center justify-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-blue-600/10 via-teal-500/10 to-amber-500/10 border border-blue-500/20 max-w-sm mx-auto">
+                <div className="flex items-center gap-1.5 font-extrabold text-blue-500 text-sm">
+                  <Zap className="w-5 h-5 fill-blue-500" />
+                  <span>+{xpEarned} XP</span>
                 </div>
-              ))}
-            </div>
+                <div className="flex items-center gap-1.5 font-extrabold text-amber-500 text-sm">
+                  <Coins className="w-5 h-5 fill-amber-500" />
+                  <span>+{coinsEarned} Gems</span>
+                </div>
+              </div>
+            )}
 
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-              {lessonId ? (
-                <button
-                  onClick={() => navigate(`/lesson/${lessonId}`)}
-                  className="px-6 py-3 rounded-2xl bg-emerald-500 text-white font-bold text-sm shadow-lg hover:scale-105 transition-all flex items-center gap-2"
-                >
-                  <span>{passed ? 'Continue Learning' : 'Return to Lesson'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              ) : null}
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
               <button
-                onClick={() => navigate('/lessons/tamil')}
-                className="px-6 py-3 rounded-2xl bg-accent-primary text-white font-bold text-sm shadow-lg hover:scale-105 transition-all flex items-center gap-2"
+                onClick={() => navigate(`/quiz/${lessonId}`)}
+                className="w-full sm:w-auto btn-secondary text-xs py-3 px-6 flex items-center justify-center gap-2"
               >
-                <span>Back to Learning Path</span>
+                <RefreshCw className="w-4 h-4" /> Retry Quiz
+              </button>
+
+              <button
+                onClick={() => navigate(`/lessons/${lessonId}`)}
+                className="w-full sm:w-auto btn-primary text-xs py-3 px-6 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
+              >
+                <span>Continue Learning Path</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => navigate('/dashboard')}
-                className="px-6 py-3 rounded-2xl bg-surface-tertiary text-slate-800 dark:text-white font-bold text-sm border border-border-light hover:bg-slate-200 transition-all"
-              >
-                Dashboard
-              </button>
             </div>
-
-          </GlassCard>
-
+          </div>
         </main>
       </div>
 
