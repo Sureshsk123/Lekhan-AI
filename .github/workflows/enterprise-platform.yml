@@ -20,7 +20,7 @@ jobs:
   unified-execution:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       # Conditionally Setup Mobile
       - uses: ./.github/shared/setup-mobile
@@ -43,9 +43,16 @@ jobs:
           mode: ${{ github.event.inputs.mode }}
           execution-type: ${{ github.event.inputs.execution-type }}
           
+      # Ensure Reports Directory Exists
+      - name: Prepare Unified Reports Directory
+        if: always()
+        run: |
+          mkdir -p automation/reports/unified/
+          touch automation/reports/unified/.gitkeep
+
       # Unified Upload
       - name: Upload Unified Reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: enterprise-reports

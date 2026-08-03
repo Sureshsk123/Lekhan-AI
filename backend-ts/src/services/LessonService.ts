@@ -167,7 +167,7 @@ export class LessonService {
       const topicIdx = allTopics.findIndex((t: any) => t.id === lesson.topic?.id);
       if (topicIdx !== -1 && topicIdx + 1 < allTopics.length) {
         const nextTopic = allTopics[topicIdx + 1];
-        if (nextTopic?.lessons?.length > 0) {
+        if (nextTopic && nextTopic.lessons && nextTopic.lessons.length > 0) {
           nextLessonId = nextTopic.lessons[0]!.id;
         }
       }

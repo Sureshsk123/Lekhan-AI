@@ -9,7 +9,7 @@ jobs:
       matrix:
         api-level: [31, 33, 34]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/shared/setup-mobile
         with:
           api-level: ${{ matrix.api-level }}
