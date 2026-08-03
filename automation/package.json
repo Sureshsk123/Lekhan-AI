@@ -8,6 +8,7 @@
     "test": "mocha --config mocha.config.js",
     "test:dev": "cross-env NODE_ENV=dev npm run test",
     "test:prod": "cross-env NODE_ENV=prod npm run test",
+    "test:phase7": "node orchestration/test_generator.js",
     "clean": "rm -rf reports/* logs/* screenshots/*"
   },
   "keywords": [

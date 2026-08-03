@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:phase7": "cd automation && npm run test:phase7"
   },
   "dependencies": {
     "autoprefixer": "^10.4.23",
