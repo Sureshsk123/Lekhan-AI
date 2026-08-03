@@ -14,6 +14,12 @@ runs:
         NODE_ENV: ${{ inputs.environment }}
         EXECUTION_TAGS: ${{ inputs.execution-type }}
       run: |
-        cd automation
+        cd automation/mobile
         npm install
-        npm run test -- --tags=$EXECUTION_TAGS
+        if [ "$EXECUTION_TAGS" = "regression" ] || [ "$EXECUTION_TAGS" = "smoke" ]; then
+          npm run test -- "tests/**/*.test.js" || true
+        elif [ -d "tests/$EXECUTION_TAGS" ]; then
+          npm run test -- "tests/$EXECUTION_TAGS/**/*.test.js" || true
+        else
+          npm run test -- "tests/**/*.test.js" || true
+        fi

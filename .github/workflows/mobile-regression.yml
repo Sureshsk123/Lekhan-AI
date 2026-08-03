@@ -21,17 +21,14 @@ on:
 jobs:
   execute-regression:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        api-level: [${{ github.event.inputs.api-level }}]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/shared/setup-mobile
         with:
-          api-level: ${{ matrix.api-level }}
+          api-level: ${{ github.event.inputs.api-level || '33' }}
       - name: Boot Emulator
         env:
-          API_LEVEL: ${{ matrix.api-level }}
+          API_LEVEL: ${{ github.event.inputs.api-level || '33' }}
         run: ./automation/mobile/scripts/setup-emulator.sh
       - name: Wait for Device
         run: ./automation/mobile/scripts/wait-for-device.sh
@@ -39,7 +36,7 @@ jobs:
         run: ./automation/mobile/scripts/health-check.sh
       - uses: ./.github/shared/run-mobile-tests
         with:
-          execution-type: ${{ github.event.inputs.execution-type }}
-          environment: ${{ github.event.inputs.environment }}
+          execution-type: ${{ github.event.inputs.execution-type || 'business' }}
+          environment: ${{ github.event.inputs.environment || 'qa' }}
       - uses: ./.github/shared/publish-artifacts
         if: always()

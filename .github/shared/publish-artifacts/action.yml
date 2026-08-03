@@ -7,12 +7,12 @@ runs:
       shell: bash
       run: ./automation/mobile/scripts/publish-reports.sh
     - name: Upload HTML/JSON/Excel Reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: execution-reports
         path: automation/mobile/reports/
     - name: Upload Screenshots & Logs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: failure-artifacts
