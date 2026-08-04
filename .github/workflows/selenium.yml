@@ -6,31 +6,6 @@ on:
   pull_request:
     branches: [ main, master, automation-framework ]
   workflow_dispatch:
-    inputs:
-      browser:
-        description: 'Browser to run tests on (chrome/firefox/edge)'
-        required: true
-        default: 'chrome'
-        type: choice
-        options:
-          - chrome
-          - firefox
-          - edge
-      headless:
-        description: 'Run in headless mode'
-        required: true
-        default: true
-        type: boolean
-      parallel:
-        description: 'Run in parallel mode'
-        required: true
-        default: true
-        type: boolean
-      workers:
-        description: 'Number of parallel workers'
-        required: true
-        default: 4
-        type: number
 
 jobs:
   e2e-tests:
@@ -39,7 +14,7 @@ jobs:
     defaults:
       run:
         working-directory: ./automation
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -51,22 +26,11 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'automation/package-lock.json'
 
-      - name: Install Dependencies
+      - name: Install Automation Dependencies
         run: npm install
 
-      - name: Apply Configuration Overrides
-        run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            jq '.browser="${{ github.event.inputs.browser }}" | .headless=${{ github.event.inputs.headless }} | .parallel=${{ github.event.inputs.parallel }} | .workers=${{ github.event.inputs.workers }}' config/config.json > tmp.json && mv tmp.json config/config.json
-          else
-            jq '.headless=true' config/config.json > tmp.json && mv tmp.json config/config.json
-          fi
-          echo "Applied config.json for execution:"
-          cat config/config.json
-
-      - name: Execute E2E Tests & Report Generation
-        run: |
-          node orchestration/test_generator.js || npm test || echo "Test execution finished."
+      - name: Execute E2E Tests & Generate Reports
+        run: node orchestration/test_generator.js || npm test || echo "Test execution finished."
 
       - name: Prepare Artifact Directories
         if: always()
@@ -74,11 +38,11 @@ jobs:
           mkdir -p reports/ logs/ screenshots/ downloads/
           touch reports/.gitkeep logs/.gitkeep screenshots/.gitkeep downloads/.gitkeep
 
-      - name: Artifact Upload
+      - name: Upload Automation Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: enterprise-automation-artifacts
+          name: selenium-automation-artifacts
           path: |
             automation/reports/
             automation/logs/
@@ -93,7 +57,7 @@ jobs:
           ENV_TYPE="CI/CD Ubuntu"
           BROWSER=$(jq -r '.browser' config/config.json 2>/dev/null || echo "chrome")
           
-          echo "## Enterprise Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Enterprise Selenium Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "- **Execution ID:** $EXEC_ID" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** $ENV_TYPE" >> $GITHUB_STEP_SUMMARY
           echo "- **Browser:** $BROWSER" >> $GITHUB_STEP_SUMMARY

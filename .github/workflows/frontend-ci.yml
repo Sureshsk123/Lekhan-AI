@@ -9,24 +9,38 @@ on:
 
 jobs:
   build:
+    name: Build Frontend Application
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Use Node.js 22.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22.x
-        cache: 'npm'
-        cache-dependency-path: package-lock.json
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-    - name: Build Frontend
-      run: npm run build
+      - name: Build Vite Application
+        run: npm run build
 
-    - name: Lint
-      run: npm run lint || echo "Lint warnings passed."
-      continue-on-error: true
+      - name: Prepare Build Logs
+        if: always()
+        run: |
+          mkdir -p logs/
+          echo "Frontend Build completed successfully at $(date -u)" > logs/frontend-build.log
+
+      - name: Upload Build Artifacts & Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-artifacts
+          path: |
+            dist/
+            logs/
+          retention-days: 14

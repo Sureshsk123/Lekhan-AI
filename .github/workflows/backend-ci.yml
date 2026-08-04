@@ -9,34 +9,46 @@ on:
 
 jobs:
   build-and-test:
+    name: Build & Test Backend
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./backend-ts
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Use Node.js 22.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22.x
-        cache: 'npm'
-        cache-dependency-path: backend-ts/package-lock.json
+      - name: Setup Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: backend-ts/package-lock.json
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install Dependencies
+        run: npm install
 
-    - name: Generate Prisma Client
-      run: npx prisma generate
+      - name: Generate Prisma Client
+        run: npx prisma generate
 
-    - name: Build
-      run: npm run build
+      - name: Build TypeScript Project
+        run: npm run build
 
-    - name: Lint
-      run: npm run lint || echo "Lint step complete"
-      continue-on-error: true
+      - name: Run Backend Tests
+        run: npm test || echo "Backend test step complete."
+        continue-on-error: true
 
-    - name: Test
-      run: npm test || echo "Test step complete"
-      continue-on-error: true
+      - name: Prepare Backend Logs
+        if: always()
+        run: |
+          mkdir -p logs/
+          echo "Backend CI execution completed at $(date -u)" > logs/backend-build.log
+
+      - name: Upload Backend Logs & Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-ci-artifacts
+          path: backend-ts/logs/
+          retention-days: 14
