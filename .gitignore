@@ -3,7 +3,8 @@ dist/
 .env
 backend/.env
 coverage/
-reports/
+/reports/
+!src/pages/reports/
 logs/
 screenshots/
 *.log
@@ -28,7 +29,8 @@ logs/
 *.log
 
 # Reports
-reports/
+/reports/
+!src/pages/reports/
 screenshots/
 excel/
 
