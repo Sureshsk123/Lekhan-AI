@@ -1,7 +1,7 @@
 # Enterprise GitHub Actions Pipeline
 
 ## Architecture
-The CI/CD pipeline consists of 4 distinct triggers (Smoke, Manual Regression, Nightly Cron, Release) that reuse standard Composite Actions located in `.github/shared/`.
+The CI/CD pipeline is orchestrated via active GitHub Actions (`backend-ci.yml`, `frontend-ci.yml`, `selenium.yml`) executing backend verification, frontend static build, and Selenium automation.
 
 ## Why `macos-latest`?
 Android emulators require hardware acceleration (KVM/HAXM). While Linux runners can support nested virtualization, `macos-latest` runners provided by GitHub Actions come with native Hypervisor.framework support, allowing emulators to boot significantly faster and with less flakiness natively out-of-the-box.

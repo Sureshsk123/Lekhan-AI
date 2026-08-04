@@ -1,6 +1,6 @@
 # CI/CD Execution Guide — Phase 7 GitHub Actions
 
-This guide documents the automated CI/CD deployment and live E2E testing workflow implemented in `.github/workflows/deploy-and-test.yml`.
+This guide documents the automated CI/CD pipeline implemented across `.github/workflows/backend-ci.yml`, `.github/workflows/frontend-ci.yml`, and `.github/workflows/selenium.yml`.
 
 ---
 
