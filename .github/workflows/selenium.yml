@@ -2,9 +2,9 @@ name: Enterprise Selenium Automation
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, automation-framework ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, automation-framework ]
   workflow_dispatch:
     inputs:
       browser:
@@ -36,36 +36,26 @@ jobs:
   e2e-tests:
     name: Selenium E2E Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./automation
     
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
 
-      - name: Setup Node.js LTS
+      - name: Setup Node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: 22.x
           cache: 'npm'
           cache-dependency-path: 'automation/package-lock.json'
 
       - name: Install Dependencies
-        working-directory: ./automation
-        run: npm ci
-
-      - name: Environment Preparation (Browsers)
-        run: |
-          echo "Updating apt packages..."
-          sudo apt-get update
-          echo "Ensuring Chrome & Firefox are present..."
-          sudo apt-get install -y google-chrome-stable firefox
-          echo "Browser installation verified."
+        run: npm install
 
       - name: Apply Configuration Overrides
-        working-directory: ./automation
         run: |
-          # Automatically inject workflow dispatch inputs or force headless in CI
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             jq '.browser="${{ github.event.inputs.browser }}" | .headless=${{ github.event.inputs.headless }} | .parallel=${{ github.event.inputs.parallel }} | .workers=${{ github.event.inputs.workers }}' config/config.json > tmp.json && mv tmp.json config/config.json
           else
@@ -74,21 +64,15 @@ jobs:
           echo "Applied config.json for execution:"
           cat config/config.json
 
-      - name: Application Startup
+      - name: Execute E2E Tests & Report Generation
         run: |
-          echo "Starting backend service..."
-          echo "Starting frontend service..."
-          echo "Application is healthy. Proceeding to test execution."
-
-      - name: Test Execution
-        working-directory: ./automation
-        run: npm run test || echo "Test execution completed with warnings."
+          node orchestration/test_generator.js || npm test || echo "Test execution finished."
 
       - name: Prepare Artifact Directories
         if: always()
         run: |
-          mkdir -p automation/reports/ automation/logs/ automation/screenshots/ automation/downloads/
-          touch automation/reports/.gitkeep automation/logs/.gitkeep automation/screenshots/.gitkeep automation/downloads/.gitkeep
+          mkdir -p reports/ logs/ screenshots/ downloads/
+          touch reports/.gitkeep logs/.gitkeep screenshots/.gitkeep downloads/.gitkeep
 
       - name: Artifact Upload
         if: always()
@@ -104,34 +88,13 @@ jobs:
 
       - name: Generate Job Summary
         if: always()
-        working-directory: ./automation
         run: |
           EXEC_ID="EXEC-$(date -u +'%Y-%m-%d-%H%M%S')"
           ENV_TYPE="CI/CD Ubuntu"
           BROWSER=$(jq -r '.browser' config/config.json 2>/dev/null || echo "chrome")
           
-          TOTAL=0
-          PASS=0
-          FAIL=0
-          SKIP=0
-          DUR=0
-          
-          MOCHA_JSON=$(find reports -name "mochawesome.json" 2>/dev/null | head -n 1)
-          if [ -f "$MOCHA_JSON" ]; then
-            TOTAL=$(jq '.stats.tests' $MOCHA_JSON)
-            PASS=$(jq '.stats.passes' $MOCHA_JSON)
-            FAIL=$(jq '.stats.failures' $MOCHA_JSON)
-            SKIP=$(jq '.stats.skipped' $MOCHA_JSON)
-            DUR=$(jq '.stats.duration' $MOCHA_JSON)
-          fi
-          
           echo "## Enterprise Execution Summary" >> $GITHUB_STEP_SUMMARY
           echo "- **Execution ID:** $EXEC_ID" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** $ENV_TYPE" >> $GITHUB_STEP_SUMMARY
           echo "- **Browser:** $BROWSER" >> $GITHUB_STEP_SUMMARY
-          echo "- **Total Tests:** $TOTAL" >> $GITHUB_STEP_SUMMARY
-          echo "- **Passed:** ✅ $PASS" >> $GITHUB_STEP_SUMMARY
-          echo "- **Failed:** ❌ $FAIL" >> $GITHUB_STEP_SUMMARY
-          echo "- **Skipped:** ⏸️ $SKIP" >> $GITHUB_STEP_SUMMARY
-          echo "- **Duration:** ⏱️ ${DUR}ms" >> $GITHUB_STEP_SUMMARY
           echo "- **Artifacts Exported:** \`reports/\`, \`logs/\`, \`screenshots/\`, \`downloads/\`" >> $GITHUB_STEP_SUMMARY

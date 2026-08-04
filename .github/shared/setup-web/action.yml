@@ -1,7 +1,0 @@
-name: 'Setup Web Environment'
-description: 'Installs Chrome and ChromeDriver'
-runs:
-  using: "composite"
-  steps:
-    - uses: browser-actions/setup-chrome@v1
-    - uses: browser-actions/setup-geckodriver@v1
