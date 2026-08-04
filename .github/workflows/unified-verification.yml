@@ -28,10 +28,12 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Prepare Report Output Directory
+        if: always()
         run: |
           mkdir -p reports/markdown/ reports/html/ reports/logs/ reports/screenshots/ "Test Results/"
 
       - name: Generate Enterprise Markdown Reports
+        if: always()
         run: |
           TIMESTAMP=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
           REPO_NAME="${{ github.repository }}"
@@ -114,6 +116,7 @@ jobs:
           EOF
 
       - name: Generate Actions Step Summary
+        if: always()
         run: |
           TIMESTAMP=$(date -u +'%Y-%m-%d %H:%M:%S UTC')
           REPO_NAME="${{ github.repository }}"
