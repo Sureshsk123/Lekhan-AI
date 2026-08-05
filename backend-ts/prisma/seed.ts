@@ -39,13 +39,24 @@ async function main() {
   console.log('🌱 Starting V1.0 database seed...');
 
   // Clear existing data
-  console.log('🗑️  Clearing existing data via TRUNCATE CASCADE...');
-  await prisma.$executeRawUnsafe(`
-    TRUNCATE TABLE 
-      "StoryPage", "Story", "Answer", "Question", "Quiz", "Exercise", 
-      "Lesson", "Topic", "Module", "Course", "Language", "Reward" 
-    RESTART IDENTITY CASCADE;
-  `);
+  console.log('🗑️  Clearing existing data...');
+  try {
+    await prisma.storyPage.deleteMany({});
+    await prisma.story.deleteMany({});
+    await prisma.answer.deleteMany({});
+    await prisma.question.deleteMany({});
+    await prisma.quiz.deleteMany({});
+    await prisma.exercise.deleteMany({});
+    await prisma.lesson.deleteMany({});
+    await prisma.topic.deleteMany({});
+    await prisma.module.deleteMany({});
+    await prisma.course.deleteMany({});
+    await prisma.language.deleteMany({});
+    await prisma.reward.deleteMany({});
+    console.log('✅ Cleared existing data');
+  } catch (err) {
+    console.warn('⚠️ Clear data notice (continuing seed):', (err as any).message || err);
+  }
 
   // Create roles
   const studentRole = await prisma.role.upsert({ where: { name: 'student' }, update: {}, create: { name: 'student' } });
