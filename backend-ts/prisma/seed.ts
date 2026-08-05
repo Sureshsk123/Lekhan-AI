@@ -10,7 +10,13 @@ import { ML_CURRICULUM } from './data/curriculum-ml';
 import { KN_CURRICULUM } from './data/curriculum-kn';
 import { STORIES_DATA } from './data/stories';
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const rawUrl = process.env.DATABASE_URL || '';
+const dbUrl = rawUrl.replace(/([?&])sslmode=[^&]*&?/, '$1').replace(/[?&]$/, '');
+const isExternalDb = dbUrl.includes('supabase') || dbUrl.includes('pooler.supabase.com');
+const pool = new Pool({
+  connectionString: dbUrl,
+  ...(isExternalDb && { ssl: { rejectUnauthorized: false } }),
+});
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 

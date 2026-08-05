@@ -4,9 +4,10 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import app from './app';
 import { env } from './config/env';
 
-const isExternalDb = env.DATABASE_URL.includes('supabase') || env.DATABASE_URL.includes('sslmode=require') || env.DATABASE_URL.includes('pooler.supabase.com');
+const dbUrl = env.DATABASE_URL.replace(/([?&])sslmode=[^&]*&?/, '$1').replace(/[?&]$/, '');
+const isExternalDb = dbUrl.includes('supabase') || dbUrl.includes('pooler.supabase.com');
 const pool = new Pool({
-  connectionString: env.DATABASE_URL,
+  connectionString: dbUrl,
   ...(isExternalDb && { ssl: { rejectUnauthorized: false } }),
 });
 const adapter = new PrismaPg(pool);
