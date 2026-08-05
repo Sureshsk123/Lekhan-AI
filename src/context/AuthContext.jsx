@@ -99,7 +99,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const [activeLanguage, setActiveLanguageState] = useState(
-    localStorage.getItem('activeLanguage') || 'tamil'
+    localStorage.getItem('activeLanguage') || 'ta'
   );
 
   const setActiveLanguage = (lang) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import Sidebar from '../../components/layout/Sidebar';
 import MobileBottomNav from '../../components/layout/MobileBottomNav';
@@ -11,6 +11,15 @@ export const ProfilePage = () => {
   const { user, logout, activeLanguage } = useAuth();
   const navigate = useNavigate();
   const [selectedCert, setSelectedCert] = useState(null);
+  const [dashStats, setDashStats] = useState(null);
+
+  useEffect(() => {
+    import('../../services/smartDashboardService').then(m => {
+      m.getSmartDashboard(activeLanguage || 'ta').then(res => {
+        if (res?.data?.stats) setDashStats(res.data.stats);
+      }).catch(() => {});
+    });
+  }, [activeLanguage]);
 
   const fullName = user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.username || 'Scholar';
   const initial = fullName.charAt(0).toUpperCase();
@@ -88,7 +97,7 @@ export const ProfilePage = () => {
               <div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-400">Total XP</span>
                 <p className="text-xl font-extrabold font-heading text-slate-900 dark:text-white">
-                  {user?.xp || 1240}
+                  {(dashStats?.xp ?? user?.xp ?? 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -100,7 +109,7 @@ export const ProfilePage = () => {
               <div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-400">Streak</span>
                 <p className="text-xl font-extrabold font-heading text-slate-900 dark:text-white">
-                  7 Days 🔥
+                  {(dashStats?.streak ?? user?.streak ?? 0) > 0 ? `${dashStats?.streak ?? user?.streak} Days 🔥` : 'Start Today!'}
                 </p>
               </div>
             </div>
@@ -124,7 +133,7 @@ export const ProfilePage = () => {
               <div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-400">Lessons</span>
                 <p className="text-xl font-extrabold font-heading text-slate-900 dark:text-white">
-                  18 Done
+                  {dashStats?.totalCompleted ?? 0} Done
                 </p>
               </div>
             </div>

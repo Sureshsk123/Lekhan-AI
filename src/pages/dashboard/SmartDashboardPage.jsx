@@ -6,9 +6,9 @@ import MobileBottomNav from '../../components/layout/MobileBottomNav';
 import { BarChart, ProgressRing } from '../../components/charts/SimpleChart';
 import { getSmartDashboard } from '../../services/smartDashboardService';
 import {
-  Flame, Trophy, Sparkles, BookOpen, Clock, Brain,
-  ArrowRight, Award, Zap, CheckCircle2, Bot, PenTool,
-  ScanText, BookmarkCheck, Play, ChevronRight, Gift, Target
+  Flame, Trophy, Sparkles, BookOpen, Brain,
+  ArrowRight, Zap, Bot,
+  BookmarkCheck, Play, Gift, Target, Mic
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import confetti from 'canvas-confetti';
@@ -20,7 +20,7 @@ export const SmartDashboardPage = () => {
   const [dailyChallengeClaimed, setDailyChallengeClaimed] = useState(false);
   const navigate = useNavigate();
 
-  const currentLang = activeLanguage || 'spanish';
+  const currentLang = activeLanguage || 'ta';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,24 +40,26 @@ export const SmartDashboardPage = () => {
   const stats = dashData?.stats || {};
   const xpMetrics = dashData?.xpMetrics || {};
   const heatmap = dashData?.heatmap || [
-    { day: 'Mon', xp: 40 },
-    { day: 'Tue', xp: 75 },
-    { day: 'Wed', xp: 120 },
-    { day: 'Thu', xp: 90 },
-    { day: 'Fri', xp: 150 },
-    { day: 'Sat', xp: 200 },
-    { day: 'Sun', xp: 110 },
+    { day: 'Mon', xp: 0 },
+    { day: 'Tue', xp: 0 },
+    { day: 'Wed', xp: 0 },
+    { day: 'Thu', xp: 0 },
+    { day: 'Fri', xp: 0 },
+    { day: 'Sat', xp: 0 },
+    { day: 'Sun', xp: 0 },
   ];
   const recent = dashData?.recentActivity || [];
-  const recommended = dashData?.recommended || [
-    { id: '1', title: 'Unit 3: Ordering Food & Drinks', language: currentLang, type: 'Conversation', xpReward: 50, duration: '8 mins' },
-    { id: '2', title: 'Unit 4: Navigating City Streets', language: currentLang, type: 'Vocabulary', xpReward: 40, duration: '6 mins' },
-  ];
+  const recommended = dashData?.recommended || [];
 
-  const xp = stats.xp || user?.xp || 1240;
-  const level = stats.level || Math.floor(xp / 200) + 1;
+  // Use real stats from API, fallback to user object from auth, then 0
+  const xp = stats.xp ?? user?.xp ?? 0;
+  const streak = stats.streak ?? user?.streak ?? 0;
+  const level = stats.level ?? Math.floor(xp / 200) + 1;
   const xpInLevel = xp % 200;
   const levelPct = Math.min(100, Math.round((xpInLevel / 200) * 100));
+
+  // For leaderboard preview — use recommended/recentActivity or fallback to placeholder
+  const topLesson = recommended[0] || null;
 
   const claimChallenge = () => {
     setDailyChallengeClaimed(true);
@@ -87,7 +89,9 @@ export const SmartDashboardPage = () => {
                   Welcome back, {user?.fullName?.split(' ')[0] || user?.username || 'Scholar'}! 🚀
                 </h1>
                 <p className="text-xs sm:text-sm text-blue-100 max-w-xl leading-relaxed font-medium">
-                  You're on a <strong className="text-amber-300 font-extrabold">7-Day Learning Streak!</strong> Keep practicing {currentLang.toUpperCase()} today to unlock Level {level + 1}.
+                  {streak > 0
+                    ? <>You're on a <strong className="text-amber-300 font-extrabold">{streak}-Day Learning Streak!</strong> Keep practicing today to unlock Level {level + 1}.</>
+                    : <>Start learning today to begin your streak! Practice daily to unlock Level {level + 1}.</>}
                 </p>
               </div>
 
@@ -123,7 +127,7 @@ export const SmartDashboardPage = () => {
               <div>
                 <span className="text-[10px] font-extrabold uppercase text-slate-400">Daily Streak</span>
                 <p className="text-xl font-extrabold font-heading text-slate-900 dark:text-white">
-                  7 Days 🔥
+                  {streak > 0 ? `${streak} Days 🔥` : 'Start Today!'}
                 </p>
               </div>
             </div>
@@ -145,9 +149,9 @@ export const SmartDashboardPage = () => {
                 <Target className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-[10px] font-extrabold uppercase text-slate-400">Daily Goal</span>
+                <span className="text-[10px] font-extrabold uppercase text-slate-400">Completed</span>
                 <p className="text-xl font-extrabold font-heading text-slate-900 dark:text-white">
-                  80% Complete
+                  {stats.totalCompleted || 0} Lessons
                 </p>
               </div>
             </div>
@@ -165,30 +169,29 @@ export const SmartDashboardPage = () => {
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full bg-emerald-500 animate-ping" />
                     <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
-                      Continue Learning
+                      {topLesson ? 'Recommended Next' : 'Continue Learning'}
                     </h3>
                   </div>
-                  <span className="text-xs font-bold text-blue-500">Unit 2 / 5</span>
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 shadow-xs">
                   <div className="space-y-1">
                     <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-500">
-                      {currentLang.toUpperCase()} · Beginner
+                      {topLesson?.language?.toUpperCase() || currentLang.toUpperCase()} · {topLesson?.type || 'Beginner'}
                     </span>
                     <h4 className="text-base font-extrabold text-slate-900 dark:text-white">
-                      Ordering Drinks & Snacks at a Cafe
+                      {topLesson?.title || 'வணக்கம் சொல்வது (Greetings in Tamil)'}
                     </h4>
                     <p className="text-xs text-slate-400">
-                      Lesson 4 of 6 · Estimated duration 8 mins · +50 XP Reward
+                      {topLesson ? `+${topLesson.xpReward || 15} XP Reward` : 'Start your first lesson today!'}
                     </p>
                   </div>
 
                   <button
-                    onClick={() => navigate(`/lesson/1`)}
+                    onClick={() => navigate(topLesson ? `/lesson/${topLesson.id}` : `/lessons/${currentLang}`)}
                     className="btn-primary text-xs py-2.5 px-5 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 shrink-0"
                   >
-                    <Play className="w-4 h-4 fill-white" /> Resume Lesson
+                    <Play className="w-4 h-4 fill-white" /> {topLesson ? 'Start Lesson' : 'View Lessons'}
                   </button>
                 </div>
               </div>
@@ -202,7 +205,9 @@ export const SmartDashboardPage = () => {
                   </h3>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                  Based on your recent quiz scores, practicing <strong>past tense verbs</strong> in {currentLang.toUpperCase()} will boost your accuracy by 25%. Try a quick 3-minute quiz or chat with the AI Tutor!
+                  {stats.totalCompleted > 0
+                    ? <>Based on your {stats.totalCompleted} completed lessons, keep practicing <strong>conversation skills</strong> to boost fluency. Try a quick quiz or chat with the AI Tutor!</>
+                    : <>Start your language journey with <strong>Tamil Greetings</strong> — the essential first step to fluency! Complete Lesson 1 to unlock your first achievement.</>}
                 </p>
                 <div className="pt-1 flex gap-3">
                   <button
@@ -212,10 +217,10 @@ export const SmartDashboardPage = () => {
                     Chat with AI Tutor →
                   </button>
                   <button
-                    onClick={() => navigate(`/quiz/${currentLang}`)}
+                    onClick={() => navigate(`/lessons/${currentLang}`)}
                     className="btn-secondary text-xs py-2 px-4"
                   >
-                    Start Quick Quiz
+                    View Lessons
                   </button>
                 </div>
               </div>
@@ -227,7 +232,7 @@ export const SmartDashboardPage = () => {
                     <Trophy className="w-4 h-4 text-amber-500" /> Weekly XP Activity
                   </h3>
                   <span className="text-xs font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-full">
-                    +{xpMetrics.weeklyXP || 870} XP Earned
+                    +{xpMetrics.weeklyXP || 0} XP Earned
                   </span>
                 </div>
                 <BarChart data={heatmap} height={160} />
@@ -293,8 +298,8 @@ export const SmartDashboardPage = () => {
                     { label: 'Lessons', path: `/lessons/${currentLang}`, icon: BookOpen, color: 'text-blue-500 bg-blue-500/10' },
                     { label: 'AI Tutor', path: '/ai-tutor', icon: Bot, color: 'text-teal-500 bg-teal-500/10' },
                     { label: 'Quiz', path: `/quiz/${currentLang}`, icon: Zap, color: 'text-amber-500 bg-amber-500/10' },
-                    { label: 'Handwriting', path: `/handwriting/${currentLang}`, icon: PenTool, color: 'text-purple-500 bg-purple-500/10' },
-                    { label: 'OCR Scanner', path: '/ocr', icon: ScanText, color: 'text-rose-500 bg-rose-500/10' },
+                    { label: 'Pronunciation', path: '/pronunciation', icon: Mic, color: 'text-purple-500 bg-purple-500/10' },
+                    { label: 'Stories', path: `/stories/${currentLang}`, icon: BookOpen, color: 'text-rose-500 bg-rose-500/10' },
                     { label: 'Vocabulary', path: '/vocabulary', icon: BookmarkCheck, color: 'text-indigo-500 bg-indigo-500/10' },
                   ].map((action) => {
                     const Icon = action.icon;
@@ -316,41 +321,40 @@ export const SmartDashboardPage = () => {
                 </div>
               </div>
 
-              {/* Leaderboard Preview Card */}
+              {/* Recent Activity Card */}
               <div className="glass-card p-6 space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <Trophy className="w-3.5 h-3.5 text-amber-500" /> Leaderboard Standing
+                    <Trophy className="w-3.5 h-3.5 text-amber-500" /> Recent Progress
                   </h3>
                   <button
-                    onClick={() => navigate('/leaderboard')}
+                    onClick={() => navigate('/reports')}
                     className="text-[11px] font-bold text-blue-500 hover:underline"
                   >
                     View All →
                   </button>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-lg">🥇</span>
-                    <div>
-                      <p className="text-xs font-extrabold text-slate-900 dark:text-white">Sofia Rodriguez</p>
-                      <p className="text-[10px] text-slate-400">1st Place · 4,850 XP</p>
-                    </div>
+                {recent.length > 0 ? (
+                  <div className="space-y-2">
+                    {recent.slice(0, 3).map((act, i) => (
+                      <div key={i} className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/60 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-extrabold text-slate-900 dark:text-white truncate max-w-[130px]">{act.lessonTitle}</p>
+                          <p className="text-[10px] text-slate-400">{act.status}</p>
+                        </div>
+                        <span className={`text-xs font-extrabold ${act.status === 'COMPLETED' ? 'text-emerald-500' : 'text-amber-500'}`}>
+                          {act.status === 'COMPLETED' ? '✓' : '▶'}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-xs font-extrabold text-amber-500">🏆 #1</span>
-                </div>
-
-                <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-lg">⚡</span>
-                    <div>
-                      <p className="text-xs font-extrabold text-slate-900 dark:text-white">You ({user?.username || 'Scholar'})</p>
-                      <p className="text-[10px] text-slate-400">6th Place · {xp} XP</p>
-                    </div>
+                ) : (
+                  <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-center">
+                    <p className="text-xs font-bold text-blue-500">No activity yet</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Complete your first lesson to see progress here!</p>
                   </div>
-                  <span className="text-xs font-extrabold text-blue-500">#6</span>
-                </div>
+                )}
               </div>
 
             </div>

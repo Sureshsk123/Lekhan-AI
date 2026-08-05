@@ -4,17 +4,20 @@ import Navbar from '../../components/layout/Navbar';
 import Sidebar from '../../components/layout/Sidebar';
 import MobileBottomNav from '../../components/layout/MobileBottomNav';
 import apiClient from '../../services/apiClient';
-import { Volume2, BookOpen, Brain, MessageSquare, Pencil, CheckCircle2, ArrowRight, Sparkles, Mic, Play, RefreshCw, Flame, Award } from 'lucide-react';
+import { Volume2, BookOpen, Brain, MessageSquare, CheckCircle2, ArrowRight, Sparkles, Mic, Play, Flame, Award } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useAuth } from '../../context/AuthContext';
 
 export const LessonDetailPage = () => {
   const { id } = useParams();
+  const { activeLanguage } = useAuth();
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('vocab');
   const [completing, setCompleting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [reward, setReward] = useState(null);
+  const [completeError, setCompleteError] = useState(null);
   const [speakingRecording, setSpeakingRecording] = useState(false);
   const [speakingPassed, setSpeakingPassed] = useState(false);
   const navigate = useNavigate();
@@ -86,13 +89,20 @@ export const LessonDetailPage = () => {
   const handleComplete = async () => {
     if (completing || completed) return;
     setCompleting(true);
+    setCompleteError(null);
     try {
-      await apiClient.post(`/v1/lessons/complete/${id}`, {}).catch(() => {});
-      setReward({ xpEarned: 50, coinsEarned: 20 });
+      const res = await apiClient.post(`/v1/lessons/complete/${id}`, {});
+      const data = res.data?.data;
+      setReward({ xpEarned: data?.xpEarned || 50, coinsEarned: data?.coinsEarned || 20 });
       setCompleted(true);
       confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+      // Auto navigate to next lesson if one is provided
+      if (data?.nextLessonId) {
+        setTimeout(() => navigate(`/lesson/${data.nextLessonId}`), 2500);
+      }
     } catch (err) {
-      console.error('Complete lesson error:', err);
+      const msg = err.response?.data?.message || 'Could not complete lesson';
+      setCompleteError(msg);
     } finally {
       setCompleting(false);
     }
@@ -170,14 +180,29 @@ export const LessonDetailPage = () => {
             <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-extrabold flex items-center justify-between animate-in fade-in">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5" />
-                <span>Lesson Completed! You earned +50 XP and +20 Coins! 🎉</span>
+                <span>Lesson Completed! You earned +{reward?.xpEarned || 50} XP and +{reward?.coinsEarned || 20} Coins! 🎉</span>
               </div>
               <button
-                onClick={() => navigate('/lessons/spanish')}
+                onClick={() => navigate(`/lessons/${activeLanguage || 'ta'}`)}
                 className="btn-primary text-xs py-1.5 px-3"
               >
                 Back to Path →
               </button>
+            </div>
+          )}
+
+          {/* Quiz Required Error Alert */}
+          {completeError && (
+            <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center justify-between animate-in fade-in">
+              <span>⚠️ {completeError}</span>
+              {lesson?.quizzes?.[0] && (
+                <button
+                  onClick={() => navigate(`/quiz/${lesson.quizzes[0].id}`)}
+                  className="btn-primary text-xs py-1.5 px-3"
+                >
+                  Take Quiz First →
+                </button>
+              )}
             </div>
           )}
 

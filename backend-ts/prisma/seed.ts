@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import 'dotenv/config';
 import { EN_CURRICULUM } from './data/curriculum-en';
@@ -10,14 +9,8 @@ import { ML_CURRICULUM } from './data/curriculum-ml';
 import { KN_CURRICULUM } from './data/curriculum-kn';
 import { STORIES_DATA } from './data/stories';
 
-const rawUrl = process.env.DATABASE_URL || '';
-const dbUrl = rawUrl.replace(/([?&])sslmode=[^&]*&?/, '$1').replace(/[?&]$/, '');
-const isExternalDb = dbUrl.includes('supabase') || dbUrl.includes('pooler.supabase.com');
-const pool = new Pool({
-  connectionString: dbUrl,
-  ...(isExternalDb && { ssl: { rejectUnauthorized: false } }),
-});
-const adapter = new PrismaPg(pool);
+const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || '';
+const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 const LANGUAGES = [
@@ -46,19 +39,13 @@ async function main() {
   console.log('🌱 Starting V1.0 database seed...');
 
   // Clear existing data
-  console.log('🗑️  Clearing existing data...');
-  await prisma.storyPage.deleteMany({});
-  await prisma.story.deleteMany({});
-  await prisma.answer.deleteMany({});
-  await prisma.question.deleteMany({});
-  await prisma.quiz.deleteMany({});
-  await prisma.exercise.deleteMany({});
-  await prisma.lesson.deleteMany({});
-  await prisma.topic.deleteMany({});
-  await prisma.module.deleteMany({});
-  await prisma.course.deleteMany({});
-  await prisma.language.deleteMany({});
-  await prisma.reward.deleteMany({});
+  console.log('🗑️  Clearing existing data via TRUNCATE CASCADE...');
+  await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE 
+      "StoryPage", "Story", "Answer", "Question", "Quiz", "Exercise", 
+      "Lesson", "Topic", "Module", "Course", "Language", "Reward" 
+    RESTART IDENTITY CASCADE;
+  `);
 
   // Create roles
   const studentRole = await prisma.role.upsert({ where: { name: 'student' }, update: {}, create: { name: 'student' } });

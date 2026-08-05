@@ -7,9 +7,12 @@ import { Star, Lock, Trophy, Flame, BookOpen, Sparkles, CheckCircle, ChevronRigh
 import { motion } from 'framer-motion';
 import apiClient from '../../services/apiClient';
 import { LANGUAGES } from '../../components/layout/LanguageSwitcher';
+import { useAuth } from '../../context/AuthContext';
 
 export const LessonsListPage = () => {
-  const { language = 'spanish' } = useParams();
+  const { language } = useParams();
+  const { activeLanguage } = useAuth();
+  const effectiveLang = language || activeLanguage || 'ta';
   const [lessons, setLessons] = useState([]);
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,18 +21,18 @@ export const LessonsListPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, [language]);
+  }, [effectiveLang]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const [lessonsRes, progressRes] = await Promise.all([
-        apiClient.get(`/v1/lessons/${language}`).catch(() => ({ data: { data: [] } })),
-        apiClient.get(`/v1/lessons/progress/${language}`).catch(() => ({ data: { progress: { lessonsCompleted: [], xpEarned: 0 } } }))
+        apiClient.get(`/v1/lessons/${effectiveLang}`).catch(() => ({ data: { data: [] } })),
+        apiClient.get(`/v1/lessons/progress/${effectiveLang}`).catch(() => ({ data: { progress: { lessonsCompleted: [], xpEarned: 0 } } }))
       ]);
 
       const modules = lessonsRes.data?.data || [];
-      const fetchedProgress = progressRes.data?.progress || { lessonsCompleted: [], weeklyActivity: [], streak: 7 };
+      const fetchedProgress = progressRes.data?.progress || { lessonsCompleted: [], weeklyActivity: [], streak: 0 };
 
       let fetchedLessons = [];
       modules.forEach(module => {
@@ -48,30 +51,19 @@ export const LessonsListPage = () => {
         });
       });
 
-      // Fallback mock curriculum if backend returns empty for the language
-      if (fetchedLessons.length === 0) {
-        fetchedLessons = [
-          { _id: '1', title: 'Greetings & Introduction', unit: 1, unitTitle: 'Unit 1: Essential Greetings', xpReward: 50, duration: '6 mins', difficulty: 'Beginner', level: 'Beginner' },
-          { _id: '2', title: 'Numbers & Counting (1-20)', unit: 1, unitTitle: 'Unit 1: Essential Greetings', xpReward: 50, duration: '8 mins', difficulty: 'Beginner', level: 'Beginner' },
-          { _id: '3', title: 'Ordering Food & Coffee', unit: 2, unitTitle: 'Unit 2: Dining & Cafes', xpReward: 60, duration: '10 mins', difficulty: 'Intermediate', level: 'Intermediate' },
-          { _id: '4', title: 'Asking for Directions in Town', unit: 2, unitTitle: 'Unit 2: Dining & Cafes', xpReward: 60, duration: '9 mins', difficulty: 'Intermediate', level: 'Intermediate' },
-          { _id: '5', title: 'Hotel Booking & Travel Expressions', unit: 3, unitTitle: 'Unit 3: Travel & Hotel', xpReward: 70, duration: '12 mins', difficulty: 'Advanced', level: 'Advanced' },
-          { _id: '6', title: 'Complex Past Tense Grammar', unit: 4, unitTitle: 'Unit 4: Advanced Masterclass', xpReward: 100, duration: '15 mins', difficulty: 'Expert', level: 'Expert' },
-        ];
-      }
-
       setLessons(fetchedLessons);
       setProgress(fetchedProgress);
     } catch (err) {
       console.error('Fetch lessons error:', err);
-    } fontally: {
+    } finally {
       setLoading(false);
     }
   };
 
-  const completedIds = new Set(progress?.lessonsCompleted?.map(l => l.lessonId) || ['1']);
+  // Build completed set from real database progress (no fallback hardcoded IDs)
+  const completedIds = new Set(progress?.lessonsCompleted?.map(l => l.lessonId) || []);
 
-  const currentLangObj = LANGUAGES.find(l => l.code === language) || LANGUAGES[0];
+  const currentLangObj = LANGUAGES.find(l => l.code === effectiveLang) || LANGUAGES[0];
 
   // Group lessons by Unit
   const units = {};
@@ -102,7 +94,7 @@ export const LessonsListPage = () => {
                   <span className="text-xs text-blue-500 font-mono font-bold">({currentLangObj.native})</span>
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Duolingo-style progressive skill tree from Beginner to Expert
+                  Progressive skill tree from Beginner to Advanced
                 </p>
               </div>
             </div>
@@ -110,11 +102,11 @@ export const LessonsListPage = () => {
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-extrabold">
                 <Flame className="w-4 h-4 fill-amber-500 animate-bounce" />
-                <span>{progress?.streak || 7} Day Streak</span>
+                <span>{progress?.streak || 0} Day Streak</span>
               </div>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-extrabold">
                 <Zap className="w-4 h-4 fill-blue-500" />
-                <span>{progress?.xpEarned || 1240} XP</span>
+                <span>{progress?.xpEarned || 0} XP</span>
               </div>
             </div>
           </div>
@@ -126,7 +118,7 @@ export const LessonsListPage = () => {
                 key={lang.code}
                 onClick={() => navigate(`/lessons/${lang.code}`)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold shrink-0 transition-all ${
-                  language === lang.code
+                  effectiveLang === lang.code
                     ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105'
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 hover:bg-slate-100'
                 }`}
@@ -143,11 +135,18 @@ export const LessonsListPage = () => {
               <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-xs font-extrabold text-slate-400">Loading {currentLangObj.name} Skill Tree...</p>
             </div>
+          ) : lessons.length === 0 ? (
+            <div className="py-20 flex flex-col items-center justify-center space-y-3">
+              <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-700" />
+              <p className="text-sm font-bold text-slate-500">No lessons found for {currentLangObj.name}</p>
+              <p className="text-xs text-slate-400">Check back soon — more content is being added!</p>
+            </div>
           ) : (
             <div className="max-w-xl mx-auto py-8 space-y-16">
               {Object.keys(units).map((unitKey, unitIdx) => {
                 const unitLessons = units[unitKey];
                 const unitTitle = unitLessons[0]?.unitTitle || `Unit ${unitKey}: Foundations`;
+                const unitCompleted = unitLessons.filter(l => completedIds.has(l._id)).length;
 
                 return (
                   <div key={unitKey} className="space-y-8">
@@ -159,7 +158,7 @@ export const LessonsListPage = () => {
                         </span>
                         <h2 className="text-xl font-extrabold font-heading mt-0.5">{unitTitle}</h2>
                         <p className="text-xs text-blue-100 mt-1">
-                          {unitLessons.length} Interactive Lessons · +{unitLessons.length * 50} XP Total
+                          {unitCompleted}/{unitLessons.length} Lessons Complete · +{unitLessons.length * 50} XP Total
                         </p>
                       </div>
                       <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
@@ -171,6 +170,7 @@ export const LessonsListPage = () => {
                     <div className="flex flex-col items-center space-y-10 relative">
                       {unitLessons.map((lesson, idx) => {
                         const isCompleted = completedIds.has(lesson._id);
+                        // First lesson always active; subsequent lessons unlock only if previous is completed
                         const isActive = idx === 0 || completedIds.has(unitLessons[idx - 1]?._id);
                         const isLocked = !isCompleted && !isActive;
 
@@ -221,7 +221,7 @@ export const LessonsListPage = () => {
                                 <Play className="w-8 h-8 fill-white text-white translate-x-0.5" />
                               )}
 
-                              {isActive && (
+                              {isActive && !isCompleted && (
                                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-400 border-2 border-white dark:border-slate-900 animate-ping" />
                               )}
                             </button>

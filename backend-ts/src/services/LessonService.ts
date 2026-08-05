@@ -155,6 +155,33 @@ export class LessonService {
       data: { xp: { increment: totalXp }, coins: { increment: coinsReward } }
     });
 
+    // Update daily streak
+    try {
+      const now = new Date();
+      const streakRecord = await prisma.dailyStreak.findUnique({ where: { userId } });
+      if (!streakRecord) {
+        await prisma.dailyStreak.create({
+          data: { userId, currentStreak: 1, longestStreak: 1, lastActiveAt: now }
+        });
+        await prisma.user.update({ where: { id: userId }, data: { streak: 1 } });
+      } else {
+        const lastActive = new Date(streakRecord.lastActiveAt);
+        const isSameDay = lastActive.toDateString() === now.toDateString();
+        if (!isSameDay) {
+          const isYesterday = (now.getTime() - lastActive.getTime()) <= (48 * 60 * 60 * 1000) && lastActive.getDate() === now.getDate() - 1;
+          const newStreak = isYesterday ? streakRecord.currentStreak + 1 : 1;
+          const newLongest = Math.max(streakRecord.longestStreak, newStreak);
+          await prisma.dailyStreak.update({
+            where: { userId },
+            data: { currentStreak: newStreak, longestStreak: newLongest, lastActiveAt: now }
+          });
+          await prisma.user.update({ where: { id: userId }, data: { streak: newStreak } });
+        }
+      }
+    } catch (streakErr) {
+      console.error('Streak update error:', streakErr);
+    }
+
     // Find the next lesson ID for auto-navigation
     let nextLessonId: string | null = null;
     const topicLessons = lesson.topic?.lessons || [];

@@ -6,9 +6,7 @@ import {
   Bot,
   BookOpen,
   Sparkles,
-  PenTool,
   Mic,
-  ScanText,
   BookmarkCheck,
   Trophy,
   Award,
@@ -61,9 +59,7 @@ export const Sidebar = () => {
       title: 'Practice & Tools',
       items: [
         { to: `/quiz/${currentLang}`, label: 'Quiz', icon: Zap, matchPrefix: '/quiz' },
-        { to: `/handwriting/${currentLang}`, label: 'Handwriting', icon: PenTool },
         { to: '/pronunciation', label: 'Pronunciation', icon: Mic },
-        { to: '/ocr', label: 'OCR Scanner', icon: ScanText, badge: 'New' },
         { to: '/vocabulary', label: 'Vocabulary', icon: BookmarkCheck },
       ],
     },
@@ -129,7 +125,7 @@ export const Sidebar = () => {
           </div>
           <div className="flex items-center gap-1 bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2 py-1 rounded-xl text-xs font-bold">
             <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500 animate-bounce" />
-            <span>7d</span>
+            <span>{user.streak > 0 ? `${user.streak}d` : '0d'}</span>
           </div>
         </div>
       ) : (

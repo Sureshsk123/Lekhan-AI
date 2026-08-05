@@ -5,7 +5,6 @@ import shopRoutes from './shop.routes';
 import aiTutorRoutes from './aiTutor.routes';
 import storyRoutes from './story.routes';
 import dashboardRoutes from './dashboard.routes';
-import handwritingRoutes from './handwriting.routes';
 import authRoutes from './auth.routes';
 
 const router = Router();
@@ -17,7 +16,6 @@ router.use('/shop', shopRoutes);
 router.use('/ai/tutor', aiTutorRoutes);
 router.use('/stories', storyRoutes);
 router.use('/dashboard', dashboardRoutes);
-router.use('/handwriting', handwritingRoutes);
 router.use('/auth', authRoutes);
 
 // Secondary Module Stubs using Express router.use (matches all subpaths natively in Express 5)

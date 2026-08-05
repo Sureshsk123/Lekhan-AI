@@ -18,7 +18,7 @@ import StoriesPage from './pages/stories/StoriesPage';
 import StoryReaderPage from './pages/stories/StoryReaderPage';
 import QuizPage from './pages/quiz/QuizPage';
 import QuizResultsPage from './pages/quiz/QuizResultsPage';
-import HandwritingCanvasPage from './pages/handwriting/HandwritingCanvasPage';
+
 import ShopPage from './pages/shop/ShopPage';
 import InventoryPage from './pages/inventory/InventoryPage';
 import NotificationCenterPage from './pages/notifications/NotificationCenterPage';
@@ -31,7 +31,7 @@ import SettingsPage from './pages/settings/SettingsPage';
 import ProfilePage from './pages/profile/ProfilePage';
 
 // New Pages
-import OcrScannerPage from './pages/ocr/OcrScannerPage';
+
 import VocabularyPage from './pages/vocabulary/VocabularyPage';
 import LeaderboardPage from './pages/leaderboard/LeaderboardPage';
 import PronunciationPage from './pages/pronunciation/PronunciationPage';
@@ -85,8 +85,7 @@ function App() {
                 <Route path="/story/:id" element={<ProtectedRoute><StoryReaderPage /></ProtectedRoute>} />
                 <Route path="/quiz/:lessonId?" element={<ProtectedRoute><QuizPage /></ProtectedRoute>} />
                 <Route path="/quiz-results" element={<ProtectedRoute><QuizResultsPage /></ProtectedRoute>} />
-                <Route path="/handwriting/:language?" element={<ProtectedRoute><HandwritingCanvasPage /></ProtectedRoute>} />
-                <Route path="/ocr" element={<ProtectedRoute><OcrScannerPage /></ProtectedRoute>} />
+
                 <Route path="/vocabulary" element={<ProtectedRoute><VocabularyPage /></ProtectedRoute>} />
                 <Route path="/leaderboard" element={<ProtectedRoute><LeaderboardPage /></ProtectedRoute>} />
                 <Route path="/pronunciation" element={<ProtectedRoute><PronunciationPage /></ProtectedRoute>} />

@@ -2,14 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 
 export const LANGUAGES = [
-  { code: 'spanish', name: 'Spanish', flag: '🇪🇸', native: 'Español' },
-  { code: 'french', name: 'French', flag: '🇫🇷', native: 'Français' },
-  { code: 'german', name: 'German', flag: '🇩🇪', native: 'Deutsch' },
-  { code: 'japanese', name: 'Japanese', flag: '🇯🇵', native: '日本語' },
-  { code: 'hindi', name: 'Hindi', flag: '🇮🇳', native: 'हिन्दी' },
-  { code: 'tamil', name: 'Tamil', flag: '🇮🇳', native: 'தமிழ்' },
-  { code: 'telugu', name: 'Telugu', flag: '🇮🇳', native: 'తెలుగు' },
-  { code: 'kannada', name: 'Kannada', flag: '🇮🇳', native: 'ಕನ್ನಡ' },
+  { code: 'ta', name: 'Tamil', flag: '🇮🇳', native: 'தமிழ்' },
+  { code: 'en', name: 'English', flag: '🇬🇧', native: 'English' },
+  { code: 'hi', name: 'Hindi', flag: '🇮🇳', native: 'हिन्दी' },
+  { code: 'te', name: 'Telugu', flag: '🇮🇳', native: 'తెలుగు' },
+  { code: 'ml', name: 'Malayalam', flag: '🇮🇳', native: 'മലയാളം' },
+  { code: 'kn', name: 'Kannada', flag: '🇮🇳', native: 'ಕನ್ನಡ' },
 ];
 
 export const LanguageSwitcher = ({ selectedLanguage = 'spanish', onSelectLanguage }) => {

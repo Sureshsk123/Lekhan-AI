@@ -9,5 +9,6 @@ router.get('/lesson/:lessonId', quizController.getQuizByLesson);
 router.post('/generate/:lessonId', authenticate, quizController.getQuizByLesson); // Map POST /generate/:lessonId to getQuizByLesson for backwards compatibility
 router.get('/:quizId', quizController.getQuiz);
 router.post('/:quizId/submit', authenticate, quizController.submitAttempt);
+router.post('/:quizId/attempt', authenticate, quizController.submitAttempt); // alias
 
 export default router;

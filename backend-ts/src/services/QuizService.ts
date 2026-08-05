@@ -96,6 +96,17 @@ export class QuizService {
     const xpEarned = passed ? ((quiz.xpReward && quiz.xpReward > 0) ? quiz.xpReward : 15) : 0;
     const coinsEarned = Math.floor(xpEarned / 2);
 
+    // Award XP and coins to user on quiz pass
+    if (passed && xpEarned > 0) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          xp: { increment: xpEarned },
+          coins: { increment: coinsEarned }
+        }
+      });
+    }
+
     return {
       attemptId: attempt.id, score, passed, correctCount, totalQuestions,
       xpEarned, coinsEarned, questionResults,

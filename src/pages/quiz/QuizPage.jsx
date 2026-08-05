@@ -3,20 +3,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Sidebar from '../../components/layout/Sidebar';
 import MobileBottomNav from '../../components/layout/MobileBottomNav';
-import { Award, CheckCircle2, XCircle, ArrowRight, Sparkles, Volume2, Heart, Mic, RefreshCw } from 'lucide-react';
-import { generateQuiz, submitQuiz } from '../../services/quizService';
+import { Award, CheckCircle2, XCircle, ArrowRight, Volume2, Heart } from 'lucide-react';
 import apiClient from '../../services/apiClient';
 import confetti from 'canvas-confetti';
 
 export const QuizPage = () => {
-  const { lessonId = 'spanish' } = useParams();
+  const { lessonId = '' } = useParams();
+  const [quiz, setQuiz] = useState(null); // full quiz object from backend
   const [questions, setQuestions] = useState([]);
-  const [actualLessonId, setActualLessonId] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [answers, setAnswers] = useState([]);
+  const [answers, setAnswers] = useState([]); // { questionId, answerId }[]
   const [loading, setLoading] = useState(true);
-  const [feedback, setFeedback] = useState(null); // { isCorrect: boolean, explanation: string }
+  const [feedback, setFeedback] = useState(null);
   const [lives, setLives] = useState(5);
   const navigate = useNavigate();
 
@@ -30,7 +29,7 @@ export const QuizPage = () => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = isCorrect ? 'sine' : 'sawtooth';
-      osc.frequency.value = isCorrect ? 587.33 : 196; // D5 vs G3
+      osc.frequency.value = isCorrect ? 587.33 : 196;
       gain.gain.setValueAtTime(0.1, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
       osc.connect(gain);
@@ -43,7 +42,6 @@ export const QuizPage = () => {
   const playTTS = (text) => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'es-ES';
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -51,53 +49,52 @@ export const QuizPage = () => {
   const fetchQuiz = async () => {
     try {
       setLoading(true);
-      const res = await generateQuiz(lessonId).catch(() => ({ data: null }));
-      let fetchedQ = res?.data?.questions;
+      // Try to fetch quiz by lessonId (backend handles fallback to quiz lookup by lessonId)
+      const res = await apiClient.get(`/v1/quizzes/${lessonId}`).catch(() => ({ data: null }));
+      const quizData = res?.data?.data;
 
-      if (!fetchedQ || fetchedQ.length === 0) {
-        // Duolingo-style fallback quiz questions
-        fetchedQ = [
+      if (quizData && quizData.questions && quizData.questions.length > 0) {
+        setQuiz(quizData);
+        setQuestions(quizData.questions);
+      } else {
+        // Demo fallback — local only, no backend submission
+        setQuiz({ id: null, lessonId });
+        setQuestions([
           {
-            id: 'q1',
-            type: 'MCQ',
-            text: 'How do you say "Good Morning" in Spanish?',
+            id: 'q1', type: 'MCQ',
+            text: 'How do you say "Good Morning" in Tamil?',
             answers: [
-              { id: 'a1', text: '¡Buenos días!', isCorrect: true },
-              { id: 'a2', text: '¡Buenas noches!', isCorrect: false },
-              { id: 'a3', text: '¡Muchas gracias!', isCorrect: false },
-              { id: 'a4', text: '¡Hasta luego!', isCorrect: false },
+              { id: 'a1', text: 'காலை வணக்கம்', isCorrect: true },
+              { id: 'a2', text: 'மாலை வணக்கம்', isCorrect: false },
+              { id: 'a3', text: 'நன்றி', isCorrect: false },
+              { id: 'a4', text: 'போய் வருகிறேன்', isCorrect: false },
             ],
-            explanation: '“Buenos días” is used in the morning until noon.',
+            explanation: '"காலை வணக்கம்" (Kaalai Vanakkam) means Good Morning in Tamil.',
           },
           {
-            id: 'q2',
-            type: 'LISTEN',
-            text: 'Listen and select the correct English translation:',
-            audioText: 'Por favor, ¿cuánto cuesta esto?',
+            id: 'q2', type: 'MCQ',
+            text: 'What does "நன்றி" (Nandri) mean?',
             answers: [
-              { id: 'b1', text: 'Please, how much does this cost?', isCorrect: true },
-              { id: 'b2', text: 'Where is the nearest train station?', isCorrect: false },
-              { id: 'b3', text: 'Could I have a glass of water?', isCorrect: false },
-              { id: 'b4', text: 'What is your name?', isCorrect: false },
+              { id: 'b1', text: 'Thank you', isCorrect: true },
+              { id: 'b2', text: 'Hello', isCorrect: false },
+              { id: 'b3', text: 'Goodbye', isCorrect: false },
+              { id: 'b4', text: 'Please', isCorrect: false },
             ],
-            explanation: '“¿Cuánto cuesta esto?” translates directly to "How much does this cost?".',
+            explanation: '"நன்றி" (Nandri) is the Tamil word for "Thank you".',
           },
           {
-            id: 'q3',
-            type: 'FILL_BLANK',
-            text: 'Complete the sentence: "Yo _____ un café solo, por favor."',
+            id: 'q3', type: 'MCQ',
+            text: 'How do you introduce yourself in Tamil: "My name is ___"?',
             answers: [
-              { id: 'c1', text: 'quisiera', isCorrect: true },
-              { id: 'c2', text: 'hablar', isCorrect: false },
-              { id: 'c3', text: 'mañana', isCorrect: false },
-              { id: 'c4', text: 'gracias', isCorrect: false },
+              { id: 'c1', text: 'என் பெயர் ...', isCorrect: true },
+              { id: 'c2', text: 'நான் வருகிறேன்', isCorrect: false },
+              { id: 'c3', text: 'உங்கள் பெயர் என்ன?', isCorrect: false },
+              { id: 'c4', text: 'நான் சாப்பிடுகிறேன்', isCorrect: false },
             ],
-            explanation: '“Quisiera” means "I would like".',
+            explanation: '"என் பெயர்" (En peyar) means "My name is" in Tamil.',
           },
-        ];
+        ]);
       }
-
-      setQuestions(fetchedQ);
     } catch (err) {
       console.error('Fetch quiz error:', err);
     } finally {
@@ -108,19 +105,19 @@ export const QuizPage = () => {
   const handleCheckAnswer = () => {
     if (!selectedOption) return;
     const currentQ = questions[currentIndex];
-    const isCorrect = selectedOption.isCorrect !== undefined ? selectedOption.isCorrect : true;
 
-    playSynthSound(isCorrect);
+    // Determine correct answer — from backend (no isCorrect field for security) we don't know until submit,
+    // but for fallback local questions we have isCorrect. For backend questions, treat any selection as continue.
+    const isLocalCorrect = selectedOption.isCorrect !== undefined ? selectedOption.isCorrect : null;
 
-    if (isCorrect) {
-      setFeedback({ isCorrect: true, explanation: 'Awesome job! Perfect answer.' });
-      confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
-    } else {
+    if (isLocalCorrect === false) {
       setLives((prev) => Math.max(0, prev - 1));
-      setFeedback({
-        isCorrect: false,
-        explanation: currentQ.explanation || 'Incorrect answer. Try keeping this in mind for review!',
-      });
+      playSynthSound(false);
+      setFeedback({ isCorrect: false, explanation: currentQ.explanation || 'Not quite! Review and try again.' });
+    } else {
+      playSynthSound(true);
+      if (isLocalCorrect === true) confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
+      setFeedback({ isCorrect: true, explanation: 'Great answer!' });
     }
   };
 
@@ -134,22 +131,48 @@ export const QuizPage = () => {
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // Finished Quiz
-      const correctCount = newAnswers.filter((a, idx) => questions[idx]?.answers?.find(opt => opt.id === a.answerId)?.isCorrect).length;
-      const scorePct = Math.round((correctCount / questions.length) * 100);
-      const passed = scorePct >= 60;
+      // Quiz finished — submit to backend if we have a real quiz ID
+      let scorePct = 0;
+      let passed = false;
+      let xpEarned = 25;
+      let coinsEarned = 0;
+      let correctCount = 0;
+      let serverLessonId = lessonId;
 
-      submitQuiz(lessonId, { answers: newAnswers }).catch(() => {});
+      if (quiz?.id) {
+        // Real quiz: submit answers to backend
+        try {
+          const submitRes = await apiClient.post(`/v1/quizzes/${quiz.id}/attempt`, { answers: newAnswers });
+          const result = submitRes.data?.data;
+          if (result) {
+            scorePct = result.score;
+            passed = result.passed;
+            xpEarned = result.xpEarned || 25;
+            coinsEarned = result.coinsEarned || 0;
+            correctCount = result.correctCount || 0;
+            serverLessonId = result.lessonId || lessonId;
+          }
+        } catch (err) {
+          console.error('Quiz submit error:', err);
+        }
+      } else {
+        // Local fallback: calculate locally
+        correctCount = newAnswers.filter((a, idx) => questions[idx]?.answers?.find(o => o.id === a.answerId)?.isCorrect).length;
+        scorePct = Math.round((correctCount / questions.length) * 100);
+        passed = scorePct >= 60;
+        xpEarned = passed ? 100 : 25;
+        coinsEarned = passed ? 30 : 0;
+      }
 
       navigate('/quiz-results', {
         state: {
           scorePct,
           passed,
-          xpEarned: passed ? 100 : 25,
-          coinsEarned: passed ? 30 : 0,
+          xpEarned,
+          coinsEarned,
           correctCount,
           totalQuestions: questions.length,
-          lessonId,
+          lessonId: serverLessonId,
         },
       });
     }
@@ -159,7 +182,7 @@ export const QuizPage = () => {
     return (
       <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center space-y-3">
         <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs font-bold text-slate-400">Building Duolingo-style Quiz...</span>
+        <span className="text-xs font-bold text-slate-400">Loading Quiz...</span>
       </div>
     );
   }
@@ -259,7 +282,7 @@ export const QuizPage = () => {
                 <div className="flex items-center justify-between">
                   <span className="font-extrabold text-sm flex items-center gap-2">
                     {feedback.isCorrect ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-rose-500" />}
-                    {feedback.isCorrect ? 'Correct! +15 XP' : 'Incorrect'}
+                    {feedback.isCorrect ? 'Correct! Great job!' : 'Incorrect'}
                   </span>
                   <button
                     onClick={handleNextQuestion}
