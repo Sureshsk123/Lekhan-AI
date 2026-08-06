@@ -6,15 +6,15 @@ import Constants from 'expo-constants';
 
 const getBaseURL = () => {
   const envBase = process.env.EXPO_PUBLIC_API_BASE_URL || process.env.EXPO_PUBLIC_API_URL;
-  if (envBase && !envBase.includes('localhost') && !envBase.includes('127.0.0.1')) {
+  if (envBase) {
     return envBase;
   }
 
-  // Dynamically extract Mac host IP from Expo Go debugger / manifest
+  // Dynamically extract Mac host IP from Expo Go debugger / manifest if running on physical device
   const debuggerHost = Constants.expoConfig?.hostUri || (Constants as any).manifest2?.extra?.expoGo?.debuggerHost;
   if (debuggerHost) {
     const hostIp = debuggerHost.split(':')[0];
-    if (hostIp) {
+    if (hostIp && hostIp !== 'localhost' && hostIp !== '127.0.0.1') {
       return `http://${hostIp}:5005/api`;
     }
   }
@@ -24,8 +24,8 @@ const getBaseURL = () => {
     return 'http://10.0.2.2:5005/api';
   }
 
-  // Mac LAN IP fallback
-  return 'http://10.71.106.108:5005/api';
+  // Local development default fallback
+  return 'http://localhost:5005/api';
 };
 
 export const API_URL = getBaseURL();

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5005/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005/api';
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -27,7 +27,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (!error.response) {
-      error.message = 'Unable to connect to server. Please verify backend is running on http://127.0.0.1:5005';
+      error.message = 'Unable to connect to server. Please verify backend is running on http://localhost:5005';
     } else if (error.response.status === 401) {
       if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
         localStorage.removeItem('token');
