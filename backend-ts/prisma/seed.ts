@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import 'dotenv/config';
 import { EN_CURRICULUM } from './data/curriculum-en';
@@ -9,8 +10,15 @@ import { ML_CURRICULUM } from './data/curriculum-ml';
 import { KN_CURRICULUM } from './data/curriculum-kn';
 import { STORIES_DATA } from './data/stories';
 
-const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL || '';
-const adapter = new PrismaPg({ connectionString });
+const dbUrl = (process.env.DIRECT_URL || process.env.DATABASE_URL || '').replace(/([?&])sslmode=[^&]*&?/, '$1').replace(/[?&]$/, '');
+const isExternalDb = dbUrl.includes('supabase') || dbUrl.includes('pooler.supabase.com');
+
+const pool = new Pool({
+  connectionString: dbUrl,
+  ...(isExternalDb && { ssl: { rejectUnauthorized: false } }),
+});
+
+const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 const LANGUAGES = [
@@ -36,9 +44,9 @@ const SHOP_ITEMS = [
 ];
 
 async function main() {
-  console.log('🌱 Starting V1.0 database seed...');
+  console.log('🌱 Starting V1.0 database seed to Supabase...');
 
-  // Clear existing data
+  // Clear existing data safely
   console.log('🗑️  Clearing existing data...');
   try {
     await prisma.storyPage.deleteMany({});
@@ -97,111 +105,140 @@ async function main() {
       for (let mi = 0; mi < modules.length; mi++) {
         const moduleData = modules[mi];
         const dbModule = await prisma.module.create({
-          data: { courseId: course.id, title: moduleData.moduleTitle, order: mi + 1 }
+          data: {
+            courseId: course.id,
+            title: moduleData.moduleTitle,
+            description: `Module ${mi + 1} of ${lang.name} ${levelEnum}`,
+            order: mi + 1
+          }
         });
 
-        for (let ti = 0; ti < moduleData.topics.length; ti++) {
-          const topicData = moduleData.topics[ti];
+        const topics = moduleData.topics || [];
+        for (let ti = 0; ti < topics.length; ti++) {
+          const topicData = topics[ti];
           const dbTopic = await prisma.topic.create({
-            data: { moduleId: dbModule.id, title: topicData.topicTitle, order: ti + 1 }
+            data: {
+              moduleId: dbModule.id,
+              title: topicData.topicTitle,
+              order: ti + 1
+            }
           });
 
-          for (let lsi = 0; lsi < topicData.lessons.length; lsi++) {
-            const lessonData = topicData.lessons[lsi];
+          const lessons = topicData.lessons || [];
+          for (let lei = 0; lei < lessons.length; lei++) {
+            const lessonData = lessons[lei];
             const dbLesson = await prisma.lesson.create({
               data: {
                 topicId: dbTopic.id,
                 title: lessonData.title,
-                content: lessonData.content,
-                type: lessonData.type,
-                xpReward: lessonData.xpReward,
-                order: lsi + 1
+                content: lessonData.content || `Content for ${lessonData.title}`,
+                type: lessonData.type || 'VOCABULARY',
+                xpReward: lessonData.xpReward || 15,
+                order: lei + 1
               }
             });
             totalLessons++;
 
             // Create exercises
-            if (lessonData.exercises) {
-              for (const ex of lessonData.exercises) {
-                await prisma.exercise.create({
-                  data: {
-                    lessonId: dbLesson.id,
-                    type: ex.type,
-                    content: JSON.stringify(ex.content)
-                  }
-                });
-              }
-            }
-
-            // Create quiz with questions
-            if (lessonData.quizQuestions && lessonData.quizQuestions.length > 0) {
-              const dbQuiz = await prisma.quiz.create({
+            const exercises = lessonData.exercises || [];
+            for (let ei = 0; ei < exercises.length; ei++) {
+              const exData = exercises[ei];
+              await prisma.exercise.create({
                 data: {
                   lessonId: dbLesson.id,
-                  title: `${lessonData.title} Quiz`,
-                  type: 'LESSON',
-                  xpReward: Math.floor(lessonData.xpReward * 0.5)
+                  type: exData.type || 'VOCABULARY',
+                  content: JSON.stringify(exData.content || {})
+                }
+              });
+            }
+
+            // Create quiz for lesson
+            const quizQuestions = lessonData.quizQuestions || [];
+            if (quizQuestions.length > 0) {
+              const dbQuiz = await prisma.quiz.create({
+                data: {
+                  lesson: { connect: { id: dbLesson.id } },
+                  title: `${lessonData.title} — Practice Quiz`,
+                  type: 'STANDARD',
+                  xpReward: 15
                 }
               });
 
-              for (const q of lessonData.quizQuestions) {
+              for (const qq of quizQuestions) {
                 const dbQuestion = await prisma.question.create({
-                  data: { quizId: dbQuiz.id, text: q.text, type: 'MULTIPLE_CHOICE' }
+                  data: {
+                    quizId: dbQuiz.id,
+                    text: qq.text,
+                    type: 'MULTIPLE_CHOICE'
+                  }
                 });
                 totalQuestions++;
 
-                await prisma.answer.createMany({
-                  data: q.answers.map((a: any) => ({
-                    questionId: dbQuestion.id,
-                    text: a.text,
-                    isCorrect: a.isCorrect
-                  }))
-                });
+                const answers = qq.answers || [];
+                for (const ans of answers) {
+                  await prisma.answer.create({
+                    data: {
+                      questionId: dbQuestion.id,
+                      text: ans.text,
+                      isCorrect: ans.isCorrect || false
+                    }
+                  });
+                }
               }
             }
           }
         }
       }
     }
-
-    // Seed Stories for this language
-    const stories = STORIES_DATA[lang.code] || [];
-    for (const storyData of stories) {
-      const dbStory = await prisma.story.create({
-        data: {
-          title: storyData.title,
-          description: storyData.description,
-          languageCode: lang.code,
-          level: storyData.level,
-        }
-      });
-
-      await prisma.storyPage.createMany({
-        data: storyData.pages.map((p: any) => ({
-          storyId: dbStory.id,
-          pageNumber: p.pageNumber,
-          text: p.text,
-          translation: p.translation
-        }))
-      });
-      totalStories++;
-    }
-
-    console.log(`✅ ${lang.name}: lessons + quizzes + ${stories.length} stories seeded`);
   }
 
-  console.log(`\n✅ SEED COMPLETE:`);
-  console.log(`   📚 Total Lessons:   ${totalLessons}`);
-  console.log(`   ❓ Total Questions:  ${totalQuestions}`);
-  console.log(`   🛍️  Shop Items:      ${SHOP_ITEMS.length}`);
-  console.log(`   📖 Stories:         ${totalStories}`);
+  // Seed Stories
+  console.log('\n📚 Seeding Stories...');
+  for (const [langCode, stories] of Object.entries(STORIES_DATA)) {
+    const dbLang = await prisma.language.findUnique({ where: { code: langCode } });
+    if (!dbLang || !Array.isArray(stories)) continue;
+
+    for (const storyData of stories) {
+      const story = await prisma.story.create({
+        data: {
+          languageCode: langCode,
+          title: storyData.title,
+          description: storyData.description || null,
+          level: storyData.level || 'BEGINNER',
+        }
+      });
+      totalStories++;
+
+      const pages = storyData.pages || [];
+      for (let pi = 0; pi < pages.length; pi++) {
+        const pageData = pages[pi];
+        await prisma.storyPage.create({
+          data: {
+            storyId: story.id,
+            pageNumber: pi + 1,
+            text: pageData.text,
+            translation: pageData.translation || null,
+            imageUrl: pageData.imageUrl || null
+          }
+        });
+      }
+    }
+  }
+
+  console.log(`\n🎉 Seed completed successfully!`);
+  console.log(`   - Total Lessons: ${totalLessons}`);
+  console.log(`   - Total Questions: ${totalQuestions}`);
+  console.log(`   - Total Stories: ${totalStories}`);
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect();
+    await pool.end();
+  })
+  .catch(async (e) => {
+    console.error('❌ Seed error:', e);
+    await prisma.$disconnect();
+    await pool.end();
+    process.exit(1);
   });

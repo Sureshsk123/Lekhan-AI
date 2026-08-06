@@ -7,6 +7,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().transform(Number).default(5005),
   DATABASE_URL: z.string().min(1),
+  DIRECT_URL: z.string().optional(),
   JWT_SECRET: z.string().min(32).default('super_secret_jwt_key_that_needs_to_be_long_in_prod'),
   OLLAMA_BASE_URL: z.string().default('http://localhost:11434'),
   OLLAMA_MODEL: z.string().default('llama3.2:3b'),

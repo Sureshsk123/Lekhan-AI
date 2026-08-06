@@ -131,7 +131,7 @@ model Lesson {
   topicId     String
   topic       Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
   title       String
-  content     String     @db.Text
+  content     String
   type        String     // GRAMMAR, VOCABULARY, READING, SPEAKING
   xpReward    Int        @default(10)
   order       Int
@@ -172,8 +172,8 @@ model StoryPage {
   storyId   String
   story     Story    @relation(fields: [storyId], references: [id], onDelete: Cascade)
   pageNumber Int
-  text      String   @db.Text
-  translation String? @db.Text
+  text      String
+  translation String?
   imageUrl  String?
   audioUrl  String?
   createdAt DateTime @default(now())
@@ -201,7 +201,7 @@ model Question {
   id        String   @id @default(uuid())
   quizId    String
   quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  text      String   @db.Text
+  text      String
   type      String   // MULTIPLE_CHOICE, TRUE_FALSE
   answers   Answer[]
   createdAt DateTime @default(now())
@@ -319,7 +319,7 @@ model SpeechRecord {
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   audioUrl    String
-  transcript  String?  @db.Text
+  transcript  String?
   score       Int?
   feedback    Json?
   createdAt   DateTime @default(now())
@@ -330,7 +330,7 @@ model WritingRecord {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content     String   @db.Text
+  content     String
   feedback    Json?
   score       Int?
   createdAt   DateTime @default(now())
@@ -351,7 +351,7 @@ model AiMessage {
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role           String       // USER, ASSISTANT
-  content        String       @db.Text
+  content        String
   createdAt      DateTime     @default(now())
 }
 
@@ -395,7 +395,7 @@ model Feedback {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   rating    Int
-  comment   String?  @db.Text
+  comment   String?
   createdAt DateTime @default(now())
 }
 
