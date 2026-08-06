@@ -94,6 +94,8 @@ export const Sidebar = () => {
     setExpandedSection(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const userStreak = typeof user?.streak === 'object' ? (user?.streak?.current || 0) : (user?.streak || 0);
+
   return (
     <aside
       className={`hidden md:flex flex-col shrink-0 transition-all duration-300 relative z-30 sticky top-16 h-[calc(100vh-4rem)] border-r border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl ${
@@ -125,7 +127,7 @@ export const Sidebar = () => {
           </div>
           <div className="flex items-center gap-1 bg-amber-500/15 text-amber-600 dark:text-amber-400 px-2 py-1 rounded-xl text-xs font-bold">
             <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500 animate-bounce" />
-            <span>{user.streak > 0 ? `${user.streak}d` : '0d'}</span>
+            <span>{userStreak > 0 ? `${userStreak}d` : '0d'}</span>
           </div>
         </div>
       ) : (

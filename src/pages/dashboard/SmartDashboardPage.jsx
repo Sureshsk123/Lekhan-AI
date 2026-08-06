@@ -51,10 +51,17 @@ export const SmartDashboardPage = () => {
   const recent = dashData?.recentActivity || [];
   const recommended = dashData?.recommended || [];
 
-  // Use real stats from API, fallback to user object from auth, then 0
-  const xp = stats.xp ?? user?.xp ?? 0;
-  const streak = stats.streak ?? user?.streak ?? 0;
-  const level = stats.level ?? Math.floor(xp / 200) + 1;
+  const extractNumber = (val) => {
+    if (typeof val === 'number') return val;
+    if (typeof val === 'object' && val !== null) {
+      return val.current || val.xp || val.count || 0;
+    }
+    return 0;
+  };
+
+  const xp = extractNumber(stats.xp ?? user?.xp);
+  const streak = extractNumber(stats.streak ?? user?.streak);
+  const level = extractNumber(stats.level ?? user?.level) || (Math.floor(xp / 200) + 1);
   const xpInLevel = xp % 200;
   const levelPct = Math.min(100, Math.round((xpInLevel / 200) * 100));
 
