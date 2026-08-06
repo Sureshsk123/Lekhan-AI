@@ -20,9 +20,8 @@ export const validate = (req, res, next) => {
 // ─── Registration Validation Rules ────────────────────────────────────────────
 export const registerValidationRules = [
     (req, res, next) => {
-        if (!req.body.username) {
-            const seedName = req.body.fullName || req.body.email?.split('@')[0] || 'scholar';
-            req.body.username = seedName.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase().slice(0, 20) + '_' + Math.floor(Math.random() * 1000);
+        if (!req.body.username && req.body.fullName) {
+            req.body.username = req.body.fullName.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase().slice(0, 20) + '_' + Math.floor(Math.random() * 1000);
         }
         next();
     },
@@ -30,7 +29,8 @@ export const registerValidationRules = [
     body('username')
         .trim()
         .notEmpty().withMessage('Username is required')
-        .isLength({ min: 2, max: 50 }).withMessage('Username must be 2–50 characters long'),
+        .isLength({ min: 3, max: 30 }).withMessage('Username must be 3–30 characters long')
+        .matches(/^[a-zA-Z0-9_]+$/).withMessage('Username can only contain letters, numbers and underscores'),
 
     body('email')
         .trim()
