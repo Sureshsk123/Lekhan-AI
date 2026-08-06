@@ -23,13 +23,17 @@ export default function SignupScreen() {
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
-    if (!name || !email || !password) {
+    if (!name.trim() || !email.trim() || !password) {
       showToast('Please fill in all required fields', 'error');
+      return;
+    }
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
+      showToast('Password must be 8+ chars with uppercase, lowercase, and a number (e.g. Password123)', 'error');
       return;
     }
     try {
       setLoading(true);
-      await signup({ name, email, password, targetLanguage, role });
+      await signup({ name: name.trim(), email: email.trim(), password, targetLanguage, role });
       showToast('Account created successfully!', 'success');
       router.replace('/(tabs)');
     } catch (err: any) {
