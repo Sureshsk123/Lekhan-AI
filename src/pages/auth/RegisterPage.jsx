@@ -8,7 +8,7 @@ import {
   getPasswordStrength,
 } from '../../utils/authValidation';
 
-const EMAIL_HINT = 'Please use a valid Gmail or Saveetha University email address.';
+const EMAIL_HINT = 'Please enter a valid email address (e.g. user@example.com).';
 
 export const RegisterPage = () => {
   const [formData, setFormData] = useState({

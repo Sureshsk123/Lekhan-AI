@@ -7,7 +7,8 @@ import { Volume2, Languages, ChevronLeft, ChevronRight, BookOpen, Bookmark, Spar
 import apiClient from '../../services/apiClient';
 
 export const StoryReaderPage = () => {
-  const { id } = useParams();
+  const { id, storyId } = useParams();
+  const effectiveId = id || storyId;
   const navigate = useNavigate();
   const [story, setStory] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -19,12 +20,12 @@ export const StoryReaderPage = () => {
 
   useEffect(() => {
     fetchStory();
-  }, [id]);
+  }, [effectiveId]);
 
   const fetchStory = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.get(`/v1/stories/${id}`).catch(() => ({ data: null }));
+      const res = await apiClient.get(`/v1/stories/${effectiveId}`).catch(() => ({ data: null }));
       let data = res?.data?.data;
       
       if (!data) {
