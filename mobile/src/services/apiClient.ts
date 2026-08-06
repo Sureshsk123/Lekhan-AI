@@ -2,19 +2,30 @@ import axios from 'axios';
 import { getSecureItem, removeSecureItem } from '../utils/secureStore';
 import { Platform } from 'react-native';
 
+import Constants from 'expo-constants';
+
 const getBaseURL = () => {
-  if (process.env.EXPO_PUBLIC_API_BASE_URL) {
-    return process.env.EXPO_PUBLIC_API_BASE_URL;
+  const envBase = process.env.EXPO_PUBLIC_API_BASE_URL || process.env.EXPO_PUBLIC_API_URL;
+  if (envBase && !envBase.includes('localhost') && !envBase.includes('127.0.0.1')) {
+    return envBase;
   }
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
+
+  // Dynamically extract Mac host IP from Expo Go debugger / manifest
+  const debuggerHost = Constants.expoConfig?.hostUri || (Constants as any).manifest2?.extra?.expoGo?.debuggerHost;
+  if (debuggerHost) {
+    const hostIp = debuggerHost.split(':')[0];
+    if (hostIp) {
+      return `http://${hostIp}:5005/api`;
+    }
   }
+
   // Android Emulator default fallback
   if (Platform.OS === 'android') {
     return 'http://10.0.2.2:5005/api';
   }
-  // iOS simulator / Expo Web default fallback
-  return 'http://localhost:5005/api';
+
+  // Mac LAN IP fallback
+  return 'http://10.71.106.108:5005/api';
 };
 
 export const API_URL = getBaseURL();
