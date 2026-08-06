@@ -1,9 +1,15 @@
+import mongoose from 'mongoose';
 import Lesson from '../models/Lesson.js';
 
 class LessonRepository {
     async findById(id) {
+        if (!id) return null;
+        const isObjectId = mongoose.Types.ObjectId.isValid(id);
         return await Lesson.findOne({
-            $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { customId: id }],
+            $or: [
+                ...(isObjectId ? [{ _id: id }] : []),
+                { customId: id }
+            ],
             isDeleted: false
         }).lean();
     }
@@ -27,16 +33,31 @@ class LessonRepository {
     }
 
     async update(id, updateData) {
+        if (!id) return null;
+        const isObjectId = mongoose.Types.ObjectId.isValid(id);
         return await Lesson.findOneAndUpdate(
-            { $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { customId: id }], isDeleted: false },
+            {
+                $or: [
+                    ...(isObjectId ? [{ _id: id }] : []),
+                    { customId: id }
+                ],
+                isDeleted: false
+            },
             updateData,
             { new: true, runValidators: true }
         );
     }
 
     async softDelete(id) {
+        if (!id) return null;
+        const isObjectId = mongoose.Types.ObjectId.isValid(id);
         return await Lesson.findOneAndUpdate(
-            { $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { customId: id }] },
+            {
+                $or: [
+                    ...(isObjectId ? [{ _id: id }] : []),
+                    { customId: id }
+                ]
+            },
             { isDeleted: true, deletedAt: new Date() },
             { new: true }
         );
