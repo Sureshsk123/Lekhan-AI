@@ -29,8 +29,8 @@ export const getLessonById = async (language: string, id: string): Promise<Lesso
   }
 };
 
-export const completeLesson = async (lessonId: string, score: number): Promise<any> => {
-  const res = await apiClient.post('/progress/complete-lesson', { lessonId, score });
+export const completeLesson = async (lessonId: string, score?: number): Promise<any> => {
+  const res = await apiClient.post(`/lessons/complete/${lessonId}`, { score });
   return res.data;
 };
 

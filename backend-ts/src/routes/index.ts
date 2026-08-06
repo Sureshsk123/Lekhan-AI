@@ -14,6 +14,7 @@ router.use('/lessons', lessonRoutes);
 router.use('/quizzes', quizRoutes);
 router.use('/shop', shopRoutes);
 router.use('/ai/tutor', aiTutorRoutes);
+router.use('/ai-tutor', aiTutorRoutes);
 router.use('/stories', storyRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/auth', authRoutes);

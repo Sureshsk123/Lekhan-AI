@@ -12,8 +12,15 @@ export interface AuthResponse {
   message?: string;
 }
 
-export const signup = async (userData: { name: string; email: string; password: string; role?: string; targetLanguage?: string }): Promise<AuthResponse> => {
-  const res = await apiClient.post('/auth/signup', userData);
+export const signup = async (userData: { name?: string; fullName?: string; email: string; password: string; role?: string; targetLanguage?: string }): Promise<AuthResponse> => {
+  const payload = {
+    email: userData.email,
+    password: userData.password,
+    fullName: userData.fullName || userData.name || 'User',
+    role: userData.role,
+    targetLanguage: userData.targetLanguage
+  };
+  const res = await apiClient.post('/auth/register', payload);
   return res.data;
 };
 
@@ -28,7 +35,7 @@ export const getProfile = async (): Promise<AuthResponse> => {
 };
 
 export const updateProfile = async (profileData: Partial<User>): Promise<AuthResponse> => {
-  const res = await apiClient.put('/user/profile', profileData);
+  const res = await apiClient.put('/auth/me', profileData);
   return res.data;
 };
 
