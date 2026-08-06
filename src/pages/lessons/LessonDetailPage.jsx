@@ -241,10 +241,10 @@ export const LessonDetailPage = () => {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-xl font-extrabold font-heading text-slate-900 dark:text-white">
-                        {v.word}
+                        {v.transliteration || v.word}
                       </h3>
                       {v.transliteration && (
-                        <span className="text-xs font-mono text-blue-500 font-bold">[{v.transliteration}]</span>
+                        <p className="text-sm font-bold text-teal-600 dark:text-teal-400 mt-0.5">{v.word}</p>
                       )}
                     </div>
                     <button

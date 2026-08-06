@@ -35,7 +35,7 @@ export const Sidebar = () => {
 
   if (!user) return null;
 
-  const currentLang = activeLanguage || 'spanish';
+  const currentLang = activeLanguage || 'ta';
 
   const navCategories = [
     {

@@ -172,11 +172,13 @@ export const VocabularyPage = () => {
 
                       <div className="text-center my-auto space-y-2">
                         <h2 className="text-3xl font-extrabold font-heading text-slate-900 dark:text-white">
-                          {currentWord.word}
+                          {currentWord.phonetic || currentWord.word}
                         </h2>
-                        <p className="text-xs font-mono text-blue-500 dark:text-blue-400">
-                          [{currentWord.phonetic}]
-                        </p>
+                        {currentWord.phonetic && (
+                          <p className="text-base font-bold text-teal-600 dark:text-teal-400">
+                            {currentWord.word}
+                          </p>
+                        )}
                         <button
                           onClick={(e) => { e.stopPropagation(); speak(currentWord.word); }}
                           className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 text-xs font-bold transition-colors"

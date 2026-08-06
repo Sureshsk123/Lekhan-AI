@@ -77,12 +77,12 @@ export const Navbar = () => {
               <div className="hidden lg:flex items-center gap-2 mr-1">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-extrabold">
                   <Flame className="w-4 h-4 text-amber-500 fill-amber-500 animate-bounce" />
-                  <span>7 Day Streak</span>
+                  <span>{user.streak || 0} Day Streak</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-xs font-extrabold">
                   <Zap className="w-4 h-4 text-blue-500 fill-blue-500" />
-                  <span>{user.xp || 1240} XP</span>
+                  <span>{user.xp || 0} XP</span>
                 </div>
               </div>
             )}
