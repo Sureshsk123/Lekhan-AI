@@ -101,21 +101,25 @@ export default function AiTutorScreen() {
         sessionId: activeSessionId || undefined,
       });
 
+      if (res.sessionId && res.sessionId !== activeSessionId) {
+        setActiveSessionId(res.sessionId);
+      }
+
       const aiMsg: ChatMessage = {
         id: Math.random().toString(),
         sender: 'ai',
-        text: res.reply || `Here is how you express "${query}":\n\nHindi: यह एक उदाहरण है।\nTamil: இது ஒரு உதாரணம்.`,
+        text: res.reply || "AI Tutor is currently unavailable. Please start the local Ollama server.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
       setMessages((prev) => [...prev, aiMsg]);
-    } catch (err) {
+    } catch (err: any) {
       setMessages((prev) => [
         ...prev,
         {
           id: Math.random().toString(),
           sender: 'ai',
-          text: `Here is the explanation for "${query}":\n\nIn polite conversation, use formal pronouns. Practice repeating this phrase aloud!`,
+          text: err?.response?.data?.message || err?.message || "AI Tutor is currently unavailable. Please start the local Ollama server.",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);

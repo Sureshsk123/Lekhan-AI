@@ -72,8 +72,8 @@ export interface ChatSession {
   _id: string;
   id?: string;
   title: string;
-  language: string;
-  messages: ChatMessage[];
+  language?: string;
+  messages?: ChatMessage[];
   createdAt: string;
   updatedAt?: string;
 }
