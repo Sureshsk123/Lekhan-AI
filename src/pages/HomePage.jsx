@@ -75,7 +75,7 @@ export const HomePage = () => {
         </h1>
 
         <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-          LangSphere AI combines adaptive learning paths, real-time voice tutoring, computer vision handwriting analysis, and dual-language interactive stories into a single sleek ecosystem.
+          LangSphere AI combines adaptive learning paths, real-time AI tutoring, gamified quizzes, and dual-language interactive stories into a single sleek ecosystem.
         </p>
 
         {/* CTA Button Group */}
@@ -176,14 +176,13 @@ export const HomePage = () => {
               </p>
             </div>
 
-            {/* Feature 2 */}
             <div className="glass-card p-8 space-y-4 glass-card-hover border-slate-800">
               <div className="p-3.5 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 w-fit">
-                <PenTool className="w-6 h-6" />
+                <Trophy className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white">Handwriting Canvas AI</h3>
+              <h3 className="text-xl font-bold text-white">Gamified Quizzes & XP</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Draw foreign characters on an HTML5 canvas and receive real-time stroke accuracy evaluation and letter formation guidance.
+                Test your knowledge after every lesson with interactive quizzes, earn XP and coins, build daily streaks, and rank on the global leaderboard.
               </p>
             </div>
 
@@ -198,14 +197,13 @@ export const HomePage = () => {
               </p>
             </div>
 
-            {/* Feature 4 */}
             <div className="glass-card p-8 space-y-4 glass-card-hover border-slate-800">
               <div className="p-3.5 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 w-fit">
-                <ScanText className="w-6 h-6" />
+                <Zap className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white">OCR Photo Text Scanner</h3>
+              <h3 className="text-xl font-bold text-white">Smart Spaced Repetition</h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Upload or snap photos of real-world menus, signs, or books to extract text, translate instantly, and save to your vocabulary deck.
+                Master new words with flashcards, pronunciation practice, and intelligent memory intervals to retain vocabulary longer.
               </p>
             </div>
 

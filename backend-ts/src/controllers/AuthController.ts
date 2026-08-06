@@ -93,7 +93,7 @@ export class AuthController {
   async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = (req as any).user?.id;
-      const { refreshToken } = req.body;
+      const { refreshToken } = req.body || {};
       if (userId && refreshToken) {
         await authService.logout(userId, refreshToken);
       }

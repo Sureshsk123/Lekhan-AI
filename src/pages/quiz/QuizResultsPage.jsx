@@ -9,7 +9,7 @@ import confetti from 'canvas-confetti';
 export const QuizResultsPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { scorePct = 85, passed = true, xpEarned = 100, coinsEarned = 30, correctCount = 4, totalQuestions = 5, lessonId = 'spanish' } = location.state || {};
+  const { scorePct = 100, passed = true, xpEarned = 15, coinsEarned = 7, correctCount = 1, totalQuestions = 1, lessonId, languageCode = 'ta' } = location.state || {};
 
   useEffect(() => {
     if (passed) {
@@ -63,14 +63,14 @@ export const QuizResultsPage = () => {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
               <button
-                onClick={() => navigate(`/quiz/${lessonId}`)}
+                onClick={() => navigate(lessonId ? `/quiz/${lessonId}` : `/lessons/${languageCode}`)}
                 className="w-full sm:w-auto btn-secondary text-xs py-3 px-6 flex items-center justify-center gap-2"
               >
                 <RefreshCw className="w-4 h-4" /> Retry Quiz
               </button>
 
               <button
-                onClick={() => navigate(`/lessons/${lessonId}`)}
+                onClick={() => navigate(`/lessons/${languageCode}`)}
                 className="w-full sm:w-auto btn-primary text-xs py-3 px-6 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
               >
                 <span>Continue Learning Path</span>

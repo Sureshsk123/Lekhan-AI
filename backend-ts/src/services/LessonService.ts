@@ -112,50 +112,23 @@ export class LessonService {
         where: { userId, quizId, passed: true },
         include: { quiz: true }
       });
-      if (!passedAttempt) {
-        throw new AppError('Cannot complete lesson without passing the quiz', 403);
+      if (passedAttempt) {
+        quizXp = (passedAttempt.quiz?.xpReward && passedAttempt.quiz.xpReward > 0) 
+          ? passedAttempt.quiz.xpReward 
+          : 15;
       }
-      quizXp = (passedAttempt.quiz?.xpReward && passedAttempt.quiz.xpReward > 0) 
-        ? passedAttempt.quiz.xpReward 
-        : 15; // Default quiz XP
-    }
-
-    const progress = await prisma.progress.findUnique({
-      where: { userId_lessonId: { userId, lessonId } }
-    });
-
-    const lessonXp    = (lesson.xpReward && lesson.xpReward > 0) ? lesson.xpReward : 25; // Default lesson XP
-    const totalXp     = lessonXp + quizXp;
-    const coinsReward = Math.floor(totalXp / 2);
-
-    if (progress?.isCompleted) {
-       // Do not award XP again, but return the value so UI shows what was earned.
-       // Still find the nextLessonId so the UI can navigate forward
-       const topicLessons2 = lesson.topic?.lessons || [];
-       const currentIdx2 = topicLessons2.findIndex((l: any) => l.id === lessonId);
-       let nextId: string | null = null;
-       if (currentIdx2 !== -1 && currentIdx2 + 1 < topicLessons2.length) {
-         nextId = topicLessons2[currentIdx2 + 1]!.id;
-       }
-       return { message: 'Already completed', xpEarned: totalXp, coinsEarned: coinsReward, lessonId, nextLessonId: nextId };
     }
 
     await prisma.progress.upsert({
       where: { userId_lessonId: { userId, lessonId } },
-      update: { isCompleted: true, status: 'COMPLETED', lastAccessed: new Date(), completedAt: new Date() },
-      create: {
-        userId, lessonId,
-        isCompleted: true, status: 'COMPLETED',
-        lastAccessed: new Date(), completedAt: new Date()
-      }
+      create: { userId, lessonId, isCompleted: true, status: 'COMPLETED' },
+      update: { isCompleted: true, status: 'COMPLETED' }
     });
 
-    await prisma.user.update({
-      where: { id: userId },
-      data: { xp: { increment: totalXp }, coins: { increment: coinsReward } }
-    });
+    const lessonXp    = (lesson.xpReward && lesson.xpReward > 0) ? lesson.xpReward : 25;
+    const totalXp     = lessonXp + quizXp;
+    const coinsReward = Math.floor(totalXp / 2);
 
-    // Update daily streak
     try {
       const now = new Date();
       const streakRecord = await prisma.dailyStreak.findUnique({ where: { userId } });
@@ -164,11 +137,11 @@ export class LessonService {
           data: { userId, currentStreak: 1, longestStreak: 1, lastActiveAt: now }
         });
         await prisma.user.update({ where: { id: userId }, data: { streak: 1 } });
-      } else {
+      } else if (streakRecord.lastActiveAt) {
         const lastActive = new Date(streakRecord.lastActiveAt);
         const isSameDay = lastActive.toDateString() === now.toDateString();
         if (!isSameDay) {
-          const isYesterday = (now.getTime() - lastActive.getTime()) <= (48 * 60 * 60 * 1000) && lastActive.getDate() === now.getDate() - 1;
+          const isYesterday = (now.getTime() - lastActive.getTime()) <= (48 * 60 * 60 * 1000);
           const newStreak = isYesterday ? streakRecord.currentStreak + 1 : 1;
           const newLongest = Math.max(streakRecord.longestStreak, newStreak);
           await prisma.dailyStreak.update({
@@ -182,14 +155,12 @@ export class LessonService {
       console.error('Streak update error:', streakErr);
     }
 
-    // Find the next lesson ID for auto-navigation
     let nextLessonId: string | null = null;
     const topicLessons = lesson.topic?.lessons || [];
-    const currentIdx = topicLessons.findIndex((l) => l.id === lessonId);
+    const currentIdx = topicLessons.findIndex((l: any) => l.id === lessonId);
     if (currentIdx !== -1 && currentIdx + 1 < topicLessons.length) {
       nextLessonId = topicLessons[currentIdx + 1]!.id;
     } else {
-      // Try next topic in same module
       const allTopics = lesson.topic?.module?.topics || [];
       const topicIdx = allTopics.findIndex((t: any) => t.id === lesson.topic?.id);
       if (topicIdx !== -1 && topicIdx + 1 < allTopics.length) {
@@ -200,7 +171,13 @@ export class LessonService {
       }
     }
 
-    return { xpEarned: totalXp, coinsEarned: coinsReward, lessonId, nextLessonId };
+    return {
+      message: 'Lesson completed',
+      xpEarned: totalXp,
+      coinsEarned: coinsReward,
+      lessonId,
+      nextLessonId
+    };
   }
 
   async getUserProgress(userId: string, languageCode?: string) {
@@ -223,7 +200,7 @@ export class LessonService {
           }
         }
       },
-      orderBy: { lastAccessed: 'desc' }
+      orderBy: { createdAt: 'desc' }
     });
 
     let actualCode = languageCode;
@@ -243,7 +220,7 @@ export class LessonService {
       ? allProgress.filter(p => p.lesson.topic.module.course.language.code === actualCode)
       : allProgress;
 
-    const completed = filtered.filter(p => p.isCompleted);
+    const completed = filtered.filter(p => p.isCompleted || p.status === 'COMPLETED');
 
     return {
       lessonsCompleted: completed.map(p => ({

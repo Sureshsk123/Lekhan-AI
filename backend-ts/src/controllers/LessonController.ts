@@ -47,7 +47,7 @@ export class LessonController {
         return;
       }
       const progress = await lessonService.getUserProgress(userId, languageCode);
-      res.status(200).json({ status: 'success', progress });
+      res.status(200).json({ status: 'success', data: { progress } });
     } catch (error) {
       next(error);
     }

@@ -161,17 +161,7 @@ export interface ChildProgress {
 
 
 
-export interface HandwritingResult {
-  score: number;
-  accuracy: number;
-  feedback: string;
-  strokeAnalysis: {
-    alignmentScore: number;
-    curvatureScore: number;
-    completenessScore: number;
-  };
-  progressHistory: { date: string; score: number }[];
-}
+
 
 export interface AppNotification {
   _id: string;

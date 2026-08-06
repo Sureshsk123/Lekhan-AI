@@ -169,9 +169,10 @@ export const LessonsListPage = () => {
                     {/* Nodes Path */}
                     <div className="flex flex-col items-center space-y-10 relative">
                       {unitLessons.map((lesson, idx) => {
+                        const globalIdx = lessons.findIndex(l => l._id === lesson._id);
                         const isCompleted = completedIds.has(lesson._id);
-                        // First lesson always active; subsequent lessons unlock only if previous is completed
-                        const isActive = idx === 0 || completedIds.has(unitLessons[idx - 1]?._id);
+                        // Lesson 1 is unlocked by default; subsequent lessons unlock if previous lesson is completed
+                        const isActive = globalIdx === 0 || completedIds.has(lessons[globalIdx - 1]?._id);
                         const isLocked = !isCompleted && !isActive;
 
                         // Zigzag sine wave offset

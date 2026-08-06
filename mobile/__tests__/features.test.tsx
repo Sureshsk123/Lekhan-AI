@@ -1,7 +1,7 @@
 import lessonService from '../src/services/lessonService';
 import storyService from '../src/services/storyService';
 import aiTutorService from '../src/services/aiTutorService';
-import handwritingService from '../src/services/handwritingService';
+
 import quizService from '../src/services/quizService';
 import shopService from '../src/services/shopService';
 import gamificationService from '../src/services/gamificationService';
@@ -59,15 +59,6 @@ describe('Comprehensive Mobile Features & Services Tests', () => {
   });
 
 
-  describe('Handwriting Feature', () => {
-    it('evaluates character drawing stroke accuracy', async () => {
-      (apiClient.post as jest.Mock).mockResolvedValueOnce({
-        data: { score: 95, accuracy: 92, feedback: 'Great strokes!' },
-      });
-      const res = await handwritingService.evaluateHandwriting([], 'क', 'Hindi');
-      expect(res.score).toBe(95);
-    });
-  });
 
   describe('Quiz Engine Feature', () => {
     it('submits quiz answers and calculates XP', async () => {

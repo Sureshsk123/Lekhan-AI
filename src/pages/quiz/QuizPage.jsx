@@ -160,8 +160,8 @@ export const QuizPage = () => {
         correctCount = newAnswers.filter((a, idx) => questions[idx]?.answers?.find(o => o.id === a.answerId)?.isCorrect).length;
         scorePct = Math.round((correctCount / questions.length) * 100);
         passed = scorePct >= 60;
-        xpEarned = passed ? 100 : 25;
-        coinsEarned = passed ? 30 : 0;
+        xpEarned = passed ? 15 : 0;
+        coinsEarned = passed ? 7 : 0;
       }
 
       navigate('/quiz-results', {
@@ -173,6 +173,7 @@ export const QuizPage = () => {
           correctCount,
           totalQuestions: questions.length,
           lessonId: serverLessonId,
+          languageCode: quiz?.lesson?.topic?.module?.course?.language?.code || 'ta',
         },
       });
     }

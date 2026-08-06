@@ -96,10 +96,16 @@ export const LessonDetailPage = () => {
       setReward({ xpEarned: data?.xpEarned || 50, coinsEarned: data?.coinsEarned || 20 });
       setCompleted(true);
       confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
-      // Auto navigate to next lesson if one is provided
-      if (data?.nextLessonId) {
-        setTimeout(() => navigate(`/lesson/${data.nextLessonId}`), 2500);
-      }
+      const quizId = lesson?.quizzes?.[0]?.id;
+      setTimeout(() => {
+        if (quizId) {
+          navigate(`/quiz/${quizId}`);
+        } else if (data?.nextLessonId) {
+          navigate(`/lessons/details/${data.nextLessonId}`);
+        } else {
+          navigate('/lessons/ta');
+        }
+      }, 2000);
     } catch (err) {
       const msg = err.response?.data?.message || 'Could not complete lesson';
       setCompleteError(msg);

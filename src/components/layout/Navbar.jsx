@@ -18,7 +18,6 @@ export const Navbar = () => {
     const path = window.location.pathname;
     if (path.startsWith('/lessons')) return 'lessons';
     if (path.startsWith('/stories')) return 'stories';
-    if (path.startsWith('/handwriting')) return 'handwriting';
     if (path.startsWith('/quiz')) return 'quiz';
     return null;
   };

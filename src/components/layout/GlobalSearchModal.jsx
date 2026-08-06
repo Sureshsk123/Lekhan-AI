@@ -59,10 +59,8 @@ export const GlobalSearchModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const quickLinks = [
-    { title: 'AI Conversation Tutor', desc: 'Practice speaking with Gemini AI', path: '/ai-tutor', icon: Bot, color: 'text-blue-500 bg-blue-500/10' },
-    { title: 'Interactive Lessons', desc: 'Duolingo-style learning path', path: '/lessons/spanish', icon: BookOpen, color: 'text-teal-500 bg-teal-500/10' },
-    { title: 'Character Handwriting Pad', desc: 'Stroke analysis canvas', path: '/handwriting/japanese', icon: PenTool, color: 'text-purple-500 bg-purple-500/10' },
-    { title: 'OCR Image Scanner', desc: 'Scan text from photos', path: '/ocr', icon: ScanText, color: 'text-amber-500 bg-amber-500/10' },
+    { title: 'AI Conversation Tutor', desc: 'Practice speaking with Ollama AI', path: '/ai-tutor', icon: Bot, color: 'text-blue-500 bg-blue-500/10' },
+    { title: 'Interactive Lessons', desc: 'Structured learning path', path: '/lessons/ta', icon: BookOpen, color: 'text-teal-500 bg-teal-500/10' },
     { title: 'Vocabulary Flashcards', desc: 'Spaced repetition hub', path: '/vocabulary', icon: Zap, color: 'text-rose-500 bg-rose-500/10' },
     { title: 'Global Leaderboard', desc: 'Rankings & XP trophies', path: '/leaderboard', icon: Trophy, color: 'text-yellow-500 bg-yellow-500/10' },
   ];
