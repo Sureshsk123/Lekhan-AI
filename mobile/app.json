@@ -38,7 +38,8 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-camera"
+      "expo-camera",
+      "expo-font"
     ],
     "scheme": "langsphere",
     "experiments": {
