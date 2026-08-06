@@ -152,11 +152,11 @@ export class DashboardService {
         inventoryCount: inventory 
       },
       stats: {
-        xp: languageXp, coins: user.coins, streak: user.streak,
+        xp: user.xp, coins: user.coins, streak: user.streak,
         level, totalCompleted, quizzesAttempted: filteredAttempts.length
       },
       xpMetrics: {
-        totalXP:  languageXp,
+        totalXP:  user.xp,
         weeklyXP: heatmap.reduce((s: number, d: any) => s + d.xp, 0),
         dailyXP:  heatmap[new Date().getDay()]?.xp || 0
       },

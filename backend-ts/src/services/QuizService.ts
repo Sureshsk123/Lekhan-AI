@@ -88,45 +88,53 @@ export class QuizService {
     const score  = Math.round((correctCount / totalQuestions) * 100);
     const passed = score >= 60; // Lowered to 60% per requirement
 
-    // Record attempt
-    const attempt = await prisma.attempt.create({
-      data: { userId, quizId, score, passed }
-    });
-
     const xpEarned = passed ? ((quiz.xpReward && quiz.xpReward > 0) ? quiz.xpReward : 15) : 0;
     const coinsEarned = Math.floor(xpEarned / 2);
 
-    // Check if this is the FIRST time the user passed this quiz
-    const passedCount = await prisma.attempt.count({
-      where: { userId, quizId, passed: true }
+    let isFirstPass = false;
+    let finalXpEarned = 0;
+    let finalCoinsEarned = 0;
+    let attemptId = '';
+
+    await prisma.$transaction(async (tx) => {
+      // Record attempt
+      const attempt = await tx.attempt.create({
+        data: { userId, quizId, score, passed }
+      });
+      attemptId = attempt.id;
+
+      // Check if this is the FIRST time the user passed this quiz
+      const passedCount = await tx.attempt.count({
+        where: { userId, quizId, passed: true }
+      });
+
+      isFirstPass = passed && passedCount === 1;
+      finalXpEarned = isFirstPass ? xpEarned : 0;
+      finalCoinsEarned = isFirstPass ? coinsEarned : 0;
+
+      // Award XP and coins only on first pass
+      if (isFirstPass && finalXpEarned > 0) {
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            xp: { increment: finalXpEarned },
+            coins: { increment: finalCoinsEarned }
+          }
+        });
+      }
+
+      // Automatically complete linked lesson on quiz pass
+      if (passed && quiz.lessonId) {
+        await tx.progress.upsert({
+          where: { userId_lessonId: { userId, lessonId: quiz.lessonId } },
+          create: { userId, lessonId: quiz.lessonId, isCompleted: true, status: 'COMPLETED' },
+          update: { isCompleted: true, status: 'COMPLETED' }
+        });
+      }
     });
 
-    const isFirstPass = passed && passedCount === 1;
-    const finalXpEarned = isFirstPass ? xpEarned : 0;
-    const finalCoinsEarned = isFirstPass ? coinsEarned : 0;
-
-    // Award XP and coins only on first pass
-    if (isFirstPass && finalXpEarned > 0) {
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          xp: { increment: finalXpEarned },
-          coins: { increment: finalCoinsEarned }
-        }
-      });
-    }
-
-    // Automatically complete linked lesson on quiz pass
-    if (passed && quiz.lessonId) {
-      await prisma.progress.upsert({
-        where: { userId_lessonId: { userId, lessonId: quiz.lessonId } },
-        create: { userId, lessonId: quiz.lessonId, isCompleted: true, status: 'COMPLETED' },
-        update: { isCompleted: true, status: 'COMPLETED' }
-      });
-    }
-
     return {
-      attemptId: attempt.id, score, passed, correctCount, totalQuestions,
+      attemptId, score, passed, correctCount, totalQuestions,
       xpEarned: finalXpEarned, coinsEarned: finalCoinsEarned, isFirstPass, questionResults,
       lessonId: quiz.lessonId
     };

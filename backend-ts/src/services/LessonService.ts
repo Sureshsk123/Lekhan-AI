@@ -105,29 +105,34 @@ export class LessonService {
     });
     if (!lesson) throw new AppError('Lesson not found', 404);
 
-    let quizXp = 0;
-    if (lesson.quizzes.length > 0) {
-      const quizId = lesson.quizzes[0]!.id;
-      const passedAttempt = await prisma.attempt.findFirst({
-        where: { userId, quizId, passed: true },
-        include: { quiz: true }
-      });
-      if (passedAttempt) {
-        quizXp = (passedAttempt.quiz?.xpReward && passedAttempt.quiz.xpReward > 0) 
-          ? passedAttempt.quiz.xpReward 
-          : 15;
-      }
-    }
-
-    await prisma.progress.upsert({
-      where: { userId_lessonId: { userId, lessonId } },
-      create: { userId, lessonId, isCompleted: true, status: 'COMPLETED' },
-      update: { isCompleted: true, status: 'COMPLETED' }
+    const existingProgress = await prisma.progress.findUnique({
+      where: { userId_lessonId: { userId, lessonId } }
     });
+    const isFirstCompletion = !existingProgress || (!existingProgress.isCompleted && existingProgress.status !== 'COMPLETED');
 
-    const lessonXp    = (lesson.xpReward && lesson.xpReward > 0) ? lesson.xpReward : 25;
-    const totalXp     = lessonXp + quizXp;
-    const coinsReward = Math.floor(totalXp / 2);
+    const lessonXp = (lesson.xpReward && lesson.xpReward > 0) ? lesson.xpReward : 25;
+    const coinsReward = Math.floor(lessonXp / 2);
+
+    const finalXpEarned = isFirstCompletion ? lessonXp : 0;
+    const finalCoinsEarned = isFirstCompletion ? coinsReward : 0;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.progress.upsert({
+        where: { userId_lessonId: { userId, lessonId } },
+        create: { userId, lessonId, isCompleted: true, status: 'COMPLETED' },
+        update: { isCompleted: true, status: 'COMPLETED' }
+      });
+
+      if (isFirstCompletion && finalXpEarned > 0) {
+        await tx.user.update({
+          where: { id: userId },
+          data: {
+            xp: { increment: finalXpEarned },
+            coins: { increment: finalCoinsEarned }
+          }
+        });
+      }
+    });
 
     try {
       const now = new Date();
@@ -173,8 +178,9 @@ export class LessonService {
 
     return {
       message: 'Lesson completed',
-      xpEarned: totalXp,
-      coinsEarned: coinsReward,
+      xpEarned: finalXpEarned,
+      coinsEarned: finalCoinsEarned,
+      isFirstCompletion,
       lessonId,
       nextLessonId
     };
