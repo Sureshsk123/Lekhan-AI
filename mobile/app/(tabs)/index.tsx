@@ -15,21 +15,23 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const { isDark } = useTheme();
 
-  const xp = user?.xp || 420;
-  const streak = user?.streak || 7;
-  const goalProgress = user?.dailyGoalProgress || 75;
+  const xp = user?.xp || 0;
+  const coins = user?.coins || 0;
+  const streak = user?.streak || 0;
+  const goalProgress = user?.dailyGoalProgress || 100;
+  const userName = user?.fullName || user?.name || 'Learner';
 
   return (
     <ScrollView style={[styles.container, isDark && styles.containerDark]}>
       {/* Header Bar */}
       <View style={styles.topHeader}>
         <View style={styles.userRow}>
-          <Avatar name={user?.name || 'Learner'} url={user?.avatarUrl} size={44} />
+          <Avatar name={userName} url={user?.avatarUrl} size={44} />
           <View style={styles.userTextCol}>
             <Text style={[styles.greeting, isDark && styles.textDark]}>
-              Namaste, {user?.name || 'Learner'}! 👋
+              Namaste, {userName.split(' ')[0]}! 👋
             </Text>
-            <Text style={styles.subGreeting}>Language: {user?.targetLanguage || 'Hindi'}</Text>
+            <Text style={styles.subGreeting}>Language: {user?.targetLanguage || 'Tamil'}</Text>
           </View>
         </View>
 

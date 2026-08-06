@@ -16,12 +16,13 @@ export default function ProfileScreen() {
   const { themeMode, setThemeMode, isDark } = useTheme();
   const { showToast } = useToast();
 
+  const userName = user?.fullName || user?.name || 'Learner';
   const [editModal, setEditModal] = useState(false);
-  const [name, setName] = useState(user?.name || 'Learner');
-  const [targetLang, setTargetLang] = useState(user?.targetLanguage || 'Hindi');
+  const [name, setName] = useState(userName);
+  const [targetLang, setTargetLang] = useState(user?.targetLanguage || 'Tamil');
 
   const handleSaveProfile = async () => {
-    await updateUser({ name, targetLanguage: targetLang });
+    await updateUser({ fullName: name, name, targetLanguage: targetLang });
     setEditModal(false);
     showToast('Profile updated successfully!', 'success');
   };
@@ -36,11 +37,11 @@ export default function ProfileScreen() {
     <ScrollView style={[styles.container, isDark && styles.containerDark]}>
       {/* Header Profile Info */}
       <Card style={styles.profileCard}>
-        <Avatar name={user?.name || 'Learner'} url={user?.avatarUrl} size={72} />
-        <Text style={[styles.name, isDark && styles.textDark]}>{user?.name || 'Learner'}</Text>
-        <Text style={styles.email}>{user?.email || 'learner@langsphere.com'}</Text>
+        <Avatar name={userName} url={user?.avatarUrl} size={72} />
+        <Text style={[styles.name, isDark && styles.textDark]}>{userName}</Text>
+        <Text style={styles.email}>{user?.email || ''}</Text>
         <View style={styles.badgeRow}>
-          <Badge label={user?.equippedTitle || 'Master Linguist'} variant="accent" />
+          <Badge label={user?.equippedTitle || 'Language Scholar'} variant="accent" />
           <Badge label={user?.role?.toUpperCase() || 'LEARNER'} variant="primary" />
         </View>
 
@@ -54,7 +55,7 @@ export default function ProfileScreen() {
       <View style={styles.statsGrid}>
         <Card style={styles.statBox}>
           <Text style={styles.statEmoji}>⚡</Text>
-          <Text style={styles.statNum}>{user?.xp || 420}</Text>
+          <Text style={styles.statNum}>{user?.xp || 0}</Text>
           <Text style={styles.statLabel}>Total XP</Text>
         </Card>
         <Card style={styles.statBox}>

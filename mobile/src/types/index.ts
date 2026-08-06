@@ -1,11 +1,13 @@
 export interface User {
   _id?: string;
   id?: string;
-  name: string;
+  name?: string;
+  fullName?: string;
   email: string;
   role: 'user' | 'parent' | 'admin';
   targetLanguage?: string;
   xp?: number;
+  coins?: number;
   streak?: number;
   level?: number;
   dailyGoal?: number;
