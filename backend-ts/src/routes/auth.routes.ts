@@ -5,11 +5,14 @@ import { authenticate } from '../middlewares/auth';
 const router = Router();
 
 router.post('/register', authController.register.bind(authController));
+router.post('/signup', authController.register.bind(authController));
 router.post('/login', authController.login.bind(authController));
 router.post('/forgot-password', authController.forgotPassword.bind(authController));
 router.post('/reset-password', authController.resetPassword.bind(authController));
 router.post('/logout', authenticate, authController.logout.bind(authController));
 router.get('/me', authenticate, authController.me.bind(authController));
+router.get('/profile', authenticate, authController.me.bind(authController));
 router.put('/me', authenticate, authController.updateProfile.bind(authController));
+router.put('/profile', authenticate, authController.updateProfile.bind(authController));
 
 export default router;
