@@ -10,12 +10,22 @@ import {
 
 const EMAIL_HINT = 'Please enter a valid email address (e.g. user@example.com).';
 
+const TARGET_LANGUAGES = [
+  { code: 'tamil', flag: '🇮🇳', name: 'Tamil', nativeName: 'தமிழ்' },
+  { code: 'english', flag: '🇬🇧', name: 'English', nativeName: 'English' },
+  { code: 'hindi', flag: '🇮🇳', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'telugu', flag: '🇮🇳', name: 'Telugu', nativeName: 'తెలుగు' },
+  { code: 'malayalam', flag: '🇮🇳', name: 'Malayalam', nativeName: 'മലയാളം' },
+  { code: 'kannada', flag: '🇮🇳', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
+];
+
 export const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    fullName:        '',
-    email:           '',
-    password:        '',
-    confirmPassword: '',
+    fullName:          '',
+    email:             '',
+    password:          '',
+    confirmPassword:   '',
+    preferredLanguage: 'tamil',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm,  setShowConfirm]  = useState(false);
@@ -46,6 +56,9 @@ export const RegisterPage = () => {
     else if (!isAllowedEmail(formData.email))
       newErrors.email = EMAIL_HINT;
 
+    if (!formData.preferredLanguage)
+      newErrors.preferredLanguage = 'Please select your preferred learning language';
+
     const allReqsMet = Object.values(passwordReqs).every(Boolean);
     if (!formData.password)
       newErrors.password = 'Password is required';
@@ -68,9 +81,10 @@ export const RegisterPage = () => {
 
     setLoading(true);
     const res = await signup({
-      fullName: formData.fullName.trim(),
-      email:    formData.email.trim().toLowerCase(),
-      password: formData.password,
+      fullName:          formData.fullName.trim(),
+      email:             formData.email.trim().toLowerCase(),
+      password:          formData.password,
+      preferredLanguage: formData.preferredLanguage,
     });
     setLoading(false);
 
@@ -175,6 +189,40 @@ export const RegisterPage = () => {
                     <p className="mt-1 text-xs text-amber-600">{EMAIL_HINT}</p>
                   )
               }
+            </div>
+
+            {/* Preferred Learning Language */}
+            <div>
+              <label className="block text-sm font-medium text-content-secondary mb-1.5">
+                Preferred Learning Language <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {TARGET_LANGUAGES.map((lang) => {
+                  const isSelected = formData.preferredLanguage === lang.code;
+                  return (
+                    <button
+                      key={lang.code}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, preferredLanguage: lang.code }));
+                        if (errors.preferredLanguage) setErrors(prev => ({ ...prev, preferredLanguage: '' }));
+                      }}
+                      className={`p-2.5 rounded-lg border flex flex-col items-center justify-center text-xs font-medium transition-all ${
+                        isSelected
+                          ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 font-bold ring-2 ring-blue-500/20'
+                          : 'border-border-strong bg-surface-primary text-content-primary hover:border-blue-400'
+                      }`}
+                    >
+                      <span className="text-base mb-0.5">{lang.flag}</span>
+                      <span>{lang.name}</span>
+                      <span className="text-[10px] opacity-75 font-normal">{lang.nativeName}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {errors.preferredLanguage && (
+                <p className="mt-1 text-xs text-red-600">{errors.preferredLanguage}</p>
+              )}
             </div>
 
             {/* Password */}

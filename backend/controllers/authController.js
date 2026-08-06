@@ -3,7 +3,7 @@ import User from '../models/User.js';
 
 // ─── Helper: Generate JWT Token ────────────────────────────────────────────────
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'langsphere_secret_change_me', {
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'langsphere_jwt_secret_key_2026', {
     expiresIn: process.env.JWT_EXPIRE || '7d'
   });
 };
@@ -18,7 +18,8 @@ const safeUser = (user) => ({
   gender: user.gender,
   avatar: user.avatar,
   mode: user.mode,
-  enrolledLanguages: user.enrolledLanguages,
+  preferredLanguage: user.preferredLanguage || user.enrolledLanguages?.[0] || 'tamil',
+  enrolledLanguages: user.enrolledLanguages || [user.preferredLanguage || 'tamil'],
   xp: user.xp,
   diamonds: user.diamonds,
   level: user.level,
@@ -31,7 +32,9 @@ const safeUser = (user) => ({
 // @access  Public
 export const registerUser = async (req, res) => {
   try {
-    const { username, email, phone, password, role, gender, avatar, mode, enrolledLanguages } = req.body;
+    const { username, email, phone, password, role, gender, avatar, mode, enrolledLanguages, preferredLanguage, language } = req.body;
+
+    const chosenLang = (preferredLanguage || language || enrolledLanguages?.[0] || 'tamil').toLowerCase();
 
     // Check for duplicate email or username in MongoDB
     const existingUser = await User.findOne({
@@ -69,7 +72,8 @@ export const registerUser = async (req, res) => {
       gender: gender ? gender.toLowerCase() : 'other',
       avatar: avatar || 'avatar1.png',
       mode: mode ? mode.toLowerCase() : 'student',
-      enrolledLanguages: enrolledLanguages ? enrolledLanguages.map(l => l.toLowerCase()) : ['tamil'],
+      preferredLanguage: chosenLang,
+      enrolledLanguages: enrolledLanguages ? enrolledLanguages.map(l => l.toLowerCase()) : [chosenLang],
       xp: 0,
       diamonds: 100,
       level: 1,

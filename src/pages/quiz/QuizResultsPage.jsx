@@ -21,11 +21,11 @@ export const QuizResultsPage = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col font-sans">
       <Navbar />
 
-      <div className="flex-1 flex max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+      <div className="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
         <Sidebar />
 
-        <main className="flex-1 space-y-6 pb-24 md:pb-8 min-w-0">
-          <div className="glass-card p-8 text-center space-y-6 border-slate-200 dark:border-slate-800">
+        <main className="flex-1 space-y-6 pb-28 md:pb-8 min-w-0">
+          <div className="glass-card p-6 sm:p-10 text-center space-y-6 border-slate-200 dark:border-slate-800">
             <div className={`w-20 h-20 rounded-3xl text-white flex items-center justify-center mx-auto shadow-2xl text-4xl animate-bounce ${
               passed ? 'bg-gradient-to-tr from-emerald-500 to-teal-400 shadow-emerald-500/30' : 'bg-gradient-to-tr from-rose-500 to-amber-500 shadow-rose-500/30'
             }`}>

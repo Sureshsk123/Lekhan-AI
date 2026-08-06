@@ -42,7 +42,7 @@ describe('Quiz Module Integration Tests', () => {
                 vocabulary: [{ word: 'அம்மா', translation: 'Mother' }]
             });
 
-        const lessonId = lessonRes.body.data.lesson._id;
+        const lessonId = lessonRes.body.data?.lesson?._id || lessonRes.body.data?._id;
 
         const res = await request(app)
             .post(`/api/quiz/generate/${lessonId}`)

@@ -14,11 +14,16 @@ export const getUserProfile = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
     try {
-        const { username, avatar, enrolledLanguages, activeTheme, activeTitle } = req.body;
+        const { username, avatar, enrolledLanguages, preferredLanguage, language, activeTheme, activeTitle } = req.body;
         const updateData = {};
 
         if (username !== undefined) updateData.username = username;
         if (avatar !== undefined) updateData.avatar = avatar;
+        if (preferredLanguage !== undefined || language !== undefined) {
+            const langVal = (preferredLanguage || language).toLowerCase();
+            updateData.preferredLanguage = langVal;
+            if (!updateData.enrolledLanguages) updateData.enrolledLanguages = [langVal];
+        }
         if (enrolledLanguages !== undefined) updateData.enrolledLanguages = enrolledLanguages;
         if (activeTheme !== undefined) updateData.activeTheme = activeTheme;
         if (activeTitle !== undefined) updateData.activeTitle = activeTitle;

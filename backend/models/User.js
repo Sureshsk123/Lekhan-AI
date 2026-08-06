@@ -50,9 +50,15 @@ const userSchema = new mongoose.Schema({
     default: 'student',
     lowercase: true
   },
+  preferredLanguage: {
+    type: String,
+    enum: ['tamil', 'telugu', 'hindi', 'kannada', 'malayalam', 'english', 'ta', 'te', 'hi', 'kn', 'ml', 'en'],
+    default: 'tamil',
+    lowercase: true
+  },
   enrolledLanguages: [{
     type: String,
-    enum: ['tamil', 'telugu', 'hindi', 'kannada', 'malayalam', 'english'],
+    enum: ['tamil', 'telugu', 'hindi', 'kannada', 'malayalam', 'english', 'ta', 'te', 'hi', 'kn', 'ml', 'en'],
     lowercase: true
   }],
   activeTheme: {

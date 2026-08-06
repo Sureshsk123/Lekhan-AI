@@ -14,6 +14,19 @@ export const getAchievements = async (req, res) => {
     }
 };
 
+export const claimAchievement = async (req, res) => {
+    try {
+        const { achievementId } = req.body;
+        if (!achievementId) {
+            return sendError(res, 400, 'Achievement ID is required');
+        }
+        const result = await GamificationService.claimAchievement(req.user, achievementId);
+        return sendSuccess(res, 200, 'Achievement reward claimed successfully', result);
+    } catch (error) {
+        return sendError(res, 400, error.message);
+    }
+};
+
 export const checkAchievements = async (req, res) => {
     try {
         const result = await GamificationService.checkAchievements(req.user);

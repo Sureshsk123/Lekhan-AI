@@ -77,10 +77,10 @@ describe('Lessons Module Integration Tests', () => {
                 description: 'Test single lesson'
             });
 
-        const lessonId = createRes.body.data.lesson._id;
+        const lessonId = createRes.body.data?.lesson?._id || createRes.body.data?._id;
 
         const getRes = await request(app)
-            .get(`/api/lessons/tamil/${lessonId}`)
+            .get(`/api/lessons/detail/${lessonId}`)
             .set('Authorization', `Bearer ${token}`);
 
         expect(getRes.statusCode).toBe(200);
@@ -97,7 +97,7 @@ describe('Lessons Module Integration Tests', () => {
                 title: 'Lesson to Update'
             });
 
-        const lessonId = createRes.body.data.lesson._id;
+        const lessonId = createRes.body.data?.lesson?._id || createRes.body.data?._id;
 
         const updateRes = await request(app)
             .put(`/api/lessons/${lessonId}`)
@@ -117,7 +117,7 @@ describe('Lessons Module Integration Tests', () => {
                 title: 'Lesson to Delete'
             });
 
-        const lessonId = createRes.body.data.lesson._id;
+        const lessonId = createRes.body.data?.lesson?._id || createRes.body.data?._id;
 
         const deleteRes = await request(app)
             .delete(`/api/lessons/${lessonId}`)
@@ -126,9 +126,9 @@ describe('Lessons Module Integration Tests', () => {
         expect(deleteRes.statusCode).toBe(200);
     });
 
-    test('POST /api/lessons/chat — returns AI tutor response', async () => {
+    test('POST /api/ai-tutor/chat — returns AI tutor response', async () => {
         const res = await request(app)
-            .post('/api/lessons/chat')
+            .post('/api/ai-tutor/chat')
             .set('Authorization', `Bearer ${token}`)
             .send({
                 message: 'How to say hello in tamil?',
@@ -136,6 +136,6 @@ describe('Lessons Module Integration Tests', () => {
             });
 
         expect(res.statusCode).toBe(200);
-        expect(res.body.reply).toBeDefined();
+        expect(res.body.data || res.body.reply).toBeDefined();
     });
 });

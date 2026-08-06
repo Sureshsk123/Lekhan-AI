@@ -55,11 +55,30 @@ export const AuthProvider = ({ children }) => {
     setToken(tok);
   };
 
-  const signup = async ({ email, password, fullName }) => {
+  const mapToLangCode = (lang) => {
+    if (!lang) return null;
+    const l = String(lang).toLowerCase();
+    if (l === 'tamil' || l === 'ta') return 'ta';
+    if (l === 'english' || l === 'en') return 'en';
+    if (l === 'hindi' || l === 'hi') return 'hi';
+    if (l === 'telugu' || l === 'te') return 'te';
+    if (l === 'malayalam' || l === 'ml') return 'ml';
+    if (l === 'kannada' || l === 'kn') return 'kn';
+    return l;
+  };
+
+  const signup = async ({ email, password, fullName, preferredLanguage }) => {
     try {
-      const res = await authService.signup({ email, password, fullName });
+      const res = await authService.signup({ email, password, fullName, preferredLanguage });
       if (res.token) storeToken(res.token, true); // always persist after signup
-      if (res.user) setUser(res.user);
+      if (res.user) {
+        setUser(res.user);
+        const langCode = mapToLangCode(res.user.preferredLanguage || preferredLanguage);
+        if (langCode) {
+          localStorage.setItem('activeLanguage', langCode);
+          setActiveLanguageState(langCode);
+        }
+      }
       return { success: true, data: res };
     } catch (error) {
       return {
@@ -73,7 +92,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await authService.login(email, password);
       if (res.token) storeToken(res.token, rememberMe);
-      if (res.user) setUser(res.user);
+      if (res.user) {
+        setUser(res.user);
+        const langCode = mapToLangCode(res.user.preferredLanguage || res.user.enrolledLanguages?.[0]);
+        if (langCode) {
+          localStorage.setItem('activeLanguage', langCode);
+          setActiveLanguageState(langCode);
+        }
+      }
       return { success: true, data: res };
     } catch (error) {
       return {
@@ -96,11 +122,29 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = (updatedData) => {
     setUser((prev) => (prev ? { ...prev, ...updatedData } : null));
+    if (updatedData.preferredLanguage) {
+      const langCode = mapToLangCode(updatedData.preferredLanguage);
+      if (langCode) {
+        localStorage.setItem('activeLanguage', langCode);
+        setActiveLanguageState(langCode);
+      }
+    }
   };
 
   const [activeLanguage, setActiveLanguageState] = useState(
     localStorage.getItem('activeLanguage') || 'ta'
   );
+
+  useEffect(() => {
+    if (user) {
+      const preferred = user.preferredLanguage || user.enrolledLanguages?.[0];
+      const langCode = mapToLangCode(preferred);
+      if (langCode && langCode !== activeLanguage) {
+        localStorage.setItem('activeLanguage', langCode);
+        setActiveLanguageState(langCode);
+      }
+    }
+  }, [user]);
 
   const setActiveLanguage = (lang) => {
     localStorage.setItem('activeLanguage', lang);

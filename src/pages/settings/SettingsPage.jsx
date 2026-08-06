@@ -111,7 +111,11 @@ export const SettingsPage = () => {
                   return (
                     <button
                       key={lang.code}
-                      onClick={() => setActiveLanguage(lang.code)}
+                      onClick={() => {
+                        setActiveLanguage(lang.code);
+                        authService.updateProfile({ preferredLanguage: lang.code }).catch(() => {});
+                        updateUser({ preferredLanguage: lang.code });
+                      }}
                       className={`p-3 rounded-2xl border-2 flex items-center justify-between text-xs font-bold transition-all ${
                         isSelected
                           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'

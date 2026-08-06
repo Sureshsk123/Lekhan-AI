@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Sidebar from '../../components/layout/Sidebar';
 import MobileBottomNav from '../../components/layout/MobileBottomNav';
-import { Award, CheckCircle2, XCircle, ArrowRight, Volume2, Heart } from 'lucide-react';
+import { Award, CheckCircle2, XCircle, ArrowRight, Volume2, Heart, Clock } from 'lucide-react';
 import apiClient from '../../services/apiClient';
 import confetti from 'canvas-confetti';
 
@@ -17,11 +17,20 @@ export const QuizPage = () => {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState(null);
   const [lives, setLives] = useState(5);
+  const [timeLeft, setTimeLeft] = useState(45);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchQuiz();
   }, [lessonId]);
+
+  useEffect(() => {
+    if (loading || feedback || !questions.length) return;
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [currentIndex, loading, feedback, questions.length]);
 
   const playSynthSound = (isCorrect) => {
     try {
@@ -127,6 +136,7 @@ export const QuizPage = () => {
     setAnswers(newAnswers);
     setSelectedOption(null);
     setFeedback(null);
+    setTimeLeft(45);
 
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex(currentIndex + 1);
@@ -195,40 +205,54 @@ export const QuizPage = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col font-sans">
       <Navbar />
 
-      <div className="flex-1 flex max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+      <div className="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
         <Sidebar />
 
-        <main className="flex-1 space-y-6 pb-24 md:pb-8 min-w-0">
-          {/* Header Progress & Lives */}
-          <div className="glass-card p-4 border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-slate-500">
+        <main className="flex-1 space-y-6 pb-28 md:pb-8 min-w-0 flex flex-col">
+          {/* Header Progress, Timer & Lives */}
+          <div className="glass-card p-4 sm:p-5 border-slate-200 dark:border-slate-800 space-y-3 shrink-0">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-xs sm:text-sm font-extrabold text-slate-600 dark:text-slate-400">
                 Question {currentIndex + 1} of {questions.length}
               </span>
 
+              {/* Timer Badge */}
+              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-colors ${
+                timeLeft <= 10 
+                  ? 'bg-rose-500/15 text-rose-500 animate-pulse border border-rose-500/30' 
+                  : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+              }`}>
+                <Clock className="w-3.5 h-3.5" />
+                <span>00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}</span>
+              </div>
+
+              {/* Lives / Hearts */}
               <div className="flex items-center gap-1 text-rose-500 font-extrabold text-xs">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Heart key={i} className={`w-4 h-4 ${i < lives ? 'fill-rose-500' : 'text-slate-300 dark:text-slate-700'}`} />
+                  <Heart key={i} className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform hover:scale-110 ${i < lives ? 'fill-rose-500 text-rose-500' : 'text-slate-300 dark:text-slate-700'}`} />
                 ))}
               </div>
             </div>
 
+            {/* Progress Bar */}
             <div className="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-blue-600 to-teal-400 rounded-full transition-all duration-300"
+                className="h-full bg-gradient-to-r from-blue-600 via-teal-400 to-blue-400 rounded-full transition-all duration-500"
                 style={{ width: `${progressPct}%` }}
               />
             </div>
           </div>
 
           {/* Question Card */}
-          <div className="glass-card p-8 space-y-6 border-slate-200 dark:border-slate-800">
-            <div className="space-y-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 px-2.5 py-1 rounded-full bg-blue-500/10">
-                {currentQ?.type || 'MULTIPLE CHOICE'}
-              </span>
+          <div className="glass-card p-5 sm:p-8 md:p-10 space-y-6 border-slate-200 dark:border-slate-800 flex flex-col justify-between flex-1">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-blue-500 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
+                  {currentQ?.type || 'MULTIPLE CHOICE'}
+                </span>
+              </div>
 
-              <h2 className="text-2xl font-extrabold font-heading text-slate-900 dark:text-white leading-snug">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold font-heading text-slate-900 dark:text-white leading-snug">
                 {currentQ?.text}
               </h2>
 
@@ -243,20 +267,20 @@ export const QuizPage = () => {
             </div>
 
             {/* Answer Options Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-2">
               {currentQ?.answers?.map((opt) => {
                 const isSelected = selectedOption?.id === opt.id;
                 return (
                   <button
                     key={opt.id}
                     onClick={() => { if (!feedback) setSelectedOption(opt); }}
-                    className={`p-4 rounded-2xl text-left text-sm font-bold transition-all border-2 flex items-center justify-between ${
+                    className={`p-4 sm:p-5 rounded-2xl text-left text-sm sm:text-base font-bold transition-all border-2 flex items-center justify-between gap-3 min-h-[64px] ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 shadow-md scale-[1.01]'
-                        : 'border-slate-200/80 dark:border-slate-700/80 bg-white/60 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 hover:border-blue-400'
+                        ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 shadow-lg shadow-blue-500/10 scale-[1.01]'
+                        : 'border-slate-200/80 dark:border-slate-700/80 bg-white/60 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 hover:border-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
-                    <span>{opt.text}</span>
+                    <span className="leading-relaxed break-words">{opt.text}</span>
                     {isSelected && <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />}
                   </button>
                 );
@@ -269,31 +293,31 @@ export const QuizPage = () => {
                 <button
                   onClick={handleCheckAnswer}
                   disabled={selectedOption === null}
-                  className="btn-primary text-xs py-3 px-6 shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                  className="btn-primary text-xs sm:text-sm py-3.5 px-8 shadow-xl shadow-blue-500/25 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                 >
                   Check Answer
                 </button>
               </div>
             ) : (
-              <div className={`p-4 rounded-2xl border space-y-3 animate-in fade-in ${
+              <div className={`p-5 rounded-2xl border space-y-3 animate-in fade-in ${
                 feedback.isCorrect
                   ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
                   : 'bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-400'
               }`}>
-                <div className="flex items-center justify-between">
-                  <span className="font-extrabold text-sm flex items-center gap-2">
-                    {feedback.isCorrect ? <CheckCircle2 className="w-5 h-5 text-emerald-500" /> : <XCircle className="w-5 h-5 text-rose-500" />}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <span className="font-extrabold text-sm sm:text-base flex items-center gap-2">
+                    {feedback.isCorrect ? <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" /> : <XCircle className="w-5 h-5 text-rose-500 shrink-0" />}
                     {feedback.isCorrect ? 'Correct! Great job!' : 'Incorrect'}
                   </span>
                   <button
                     onClick={handleNextQuestion}
-                    className="btn-primary text-xs py-2.5 px-5 shadow-md flex items-center gap-2"
+                    className="btn-primary text-xs sm:text-sm py-3 px-6 shadow-md flex items-center justify-center gap-2 w-full sm:w-auto"
                   >
                     <span>Next Question</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
-                <p className="text-xs font-medium leading-relaxed">{feedback.explanation}</p>
+                <p className="text-xs sm:text-sm font-medium leading-relaxed">{feedback.explanation}</p>
               </div>
             )}
           </div>
