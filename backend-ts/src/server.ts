@@ -4,22 +4,27 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import app from './app';
 import { env } from './config/env';
 
-// Prepare database connection string
-const dbUrl = (env.DATABASE_URL || env.DIRECT_URL || '').replace(/([?&])sslmode=[^&]*&?/, '$1').replace(/[?&]$/, '');
+// Prepare database connection string (clean sslmode and pgbouncer params for pg Pool)
+const rawDbUrl = env.DIRECT_URL || env.DATABASE_URL || '';
+const dbUrl = rawDbUrl
+  .replace(/([?&])sslmode=[^&]*&?/, '$1')
+  .replace(/([?&])pgbouncer=[^&]*&?/, '$1')
+  .replace(/[?&]$/, '');
+
 const isExternalDb = dbUrl.includes('supabase') || dbUrl.includes('pooler.supabase.com');
 
 export const pool = new Pool({
   connectionString: dbUrl,
-  max: 10,
+  max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 10000,
+  connectionTimeoutMillis: 30000,
   keepAlive: true,
   ...(isExternalDb && { ssl: { rejectUnauthorized: false } }),
 });
 
-// Handle pool error event (non-fatal, auto-reconnects on next query)
+// Non-fatal error listener to prevent uncaught process exceptions on idle client drops
 pool.on('error', (err) => {
-  console.warn('⚠️ PostgreSQL Pool Warning (idle client error):', err.message);
+  console.warn('⚠️ PostgreSQL Pool Notice (idle client reconnect):', err.message);
 });
 
 const adapter = new PrismaPg(pool);
