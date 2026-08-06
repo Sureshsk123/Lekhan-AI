@@ -80,18 +80,39 @@ app.use('/api', limiter);
 // ─── Swagger Documentation ─────────────────────────────────────────────────────
 setupSwagger(app);
 
-// ─── Core Enterprise Routes ────────────────────────────────────────────────────
+// ─── Core Enterprise Routes (Supports /api and /api/v1 prefixes) ───────────────
 app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
+
 app.use('/api/user', userRoutes);
+app.use('/api/v1/user', userRoutes);
+
 app.use('/api/lessons', lessonRoutes);
+app.use('/api/v1/lessons', lessonRoutes);
+
 app.use('/api/stories', storyRoutes);
+app.use('/api/v1/stories', storyRoutes);
+
 app.use('/api/progress', progressRoutes);
+app.use('/api/v1/progress', progressRoutes);
+
 app.use('/api/ocr', ocrRoutes);
+app.use('/api/v1/ocr', ocrRoutes);
+
 app.use('/api/quiz', quizRoutes);
+app.use('/api/v1/quiz', quizRoutes);
+
 app.use('/api/gamification', gamificationRoutes);
+app.use('/api/v1/gamification', gamificationRoutes);
+
 app.use('/api/shop', shopRoutes);
+app.use('/api/v1/shop', shopRoutes);
+
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
+
 app.use('/api/handwriting', handwritingEvalRoutes);
+app.use('/api/v1/handwriting', handwritingEvalRoutes);
 
 // ─── Phase 4A AI Learning Engine Routes ───────────────────────────────────────
 app.use('/api/ai-tutor', aiTutorRoutes);
