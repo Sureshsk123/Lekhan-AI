@@ -81,9 +81,11 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, data: res };
     } catch (error) {
+      const specificError = error.response?.data?.errors?.[0]?.message;
+      const genMsg = error.response?.data?.message;
       return {
         success: false,
-        message: error.response?.data?.message || error.message || 'Registration failed',
+        message: specificError || genMsg || error.message || 'Registration failed',
       };
     }
   };
@@ -102,9 +104,11 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, data: res };
     } catch (error) {
+      const specificError = error.response?.data?.errors?.[0]?.message;
+      const genMsg = error.response?.data?.message;
       return {
         success: false,
-        message: error.response?.data?.message || error.message || 'Login failed',
+        message: specificError || genMsg || error.message || 'Login failed',
       };
     }
   };
