@@ -13,12 +13,12 @@ export const BarChart = ({ data = [], height = 150 }) => {
           <div key={idx} className="flex-1 flex flex-col items-center gap-1 group">
             <div className="w-full bg-slate-100 dark:bg-slate-700/60 rounded-xl h-full flex items-end p-0.5 relative overflow-hidden">
               <div
-                className="w-full bg-accent-primary rounded-lg transition-all duration-500 group-hover:from-emerald-400 group-hover:to-teal-300"
+                className="w-full bg-gradient-to-t from-blue-600 to-teal-400 rounded-lg transition-all duration-500 group-hover:from-emerald-400 group-hover:to-teal-300"
                 style={{ height: `${pct}%` }}
               />
             </div>
             <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 truncate w-full text-center">
-              {item.label || item.date?.split('-').slice(1).join('/') || `D${idx + 1}`}
+              {item.day || item.label || item.date?.split('-').slice(1).join('/') || `D${idx + 1}`}
             </span>
           </div>
         );

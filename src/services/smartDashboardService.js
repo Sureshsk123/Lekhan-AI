@@ -1,8 +1,14 @@
 import apiClient from './apiClient';
 
 export const getSmartDashboard = async (language = null) => {
-  const url = language ? `/v1/dashboard?language=${language}` : '/v1/dashboard';
-  const res = await apiClient.get(url);
+  const query = language ? `?language=${language}` : '';
+  const res = await apiClient.get(`/dashboard/smart${query}`).catch(() =>
+    apiClient.get(`/v1/dashboard/smart${query}`).catch(() =>
+      apiClient.get(`/v1/dashboard${query}`).catch(() =>
+        apiClient.get(`/dashboard${query}`)
+      )
+    )
+  );
   return res.data;
 };
 

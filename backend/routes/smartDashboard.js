@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use(protect);
 
+router.get('/', getSmartDashboard);
 router.get('/smart', getSmartDashboard);
 
 export default router;

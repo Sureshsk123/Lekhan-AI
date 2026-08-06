@@ -123,6 +123,7 @@ app.use('/api/analytics/ai', aiAnalyticsRoutes);
 // ─── Phase 4B Intelligent Learning Platform Routes ────────────────────────────
 app.use('/api/personalized', personalizedRoutes);
 app.use('/api/dashboard', smartDashboardRoutes);
+app.use('/api/v1/dashboard', smartDashboardRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/parent', parentRoutes);
 app.use('/api/admin', adminRoutes);
