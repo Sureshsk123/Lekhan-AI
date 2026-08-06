@@ -163,7 +163,7 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5005;
 
 // ─── Bootstrap: Connect MongoDB Atlas → Start Listening ───────────────────────
 const startServer = async () => {
